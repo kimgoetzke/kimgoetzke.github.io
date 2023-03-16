@@ -52,15 +52,14 @@ jobs:
           # For maximum backward compatibility with Hugo modules
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
-        run: cd cheatsheets && |
-          hugo \
+        run: cd cheatsheets && hugo \
             --gc \
             --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}/"          
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ./public
+          path: ./cheatsheets/public
 
   # Deployment job
   deploy:
