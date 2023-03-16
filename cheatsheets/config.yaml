@@ -1,6 +1,7 @@
-baseURL: 'http://kimgoetzke.github.io/'
+baseURL: 'http://kimgoetzke.github.io/cheatsheets/'
 languageCode: 'en-gb'
 title: 'Cheatsheets'
+canonifyurls: true
 
 taxonomies:
   tag: tags
