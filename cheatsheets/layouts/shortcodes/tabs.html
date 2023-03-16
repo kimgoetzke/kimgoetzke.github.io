@@ -1,0 +1,14 @@
+{{ if .Inner }}{{ end }}
+{{ $id := .Get 0 }}
+{{ $group := printf "tabs-%s" $id }}
+
+<div class="tabs is-centered is-boxed">
+    <ul>
+{{- range $index, $tab := .Scratch.Get $group -}}
+  <li><a>{{- $tab.Name -}}</a></li>
+  {{/*  <div class="tabs-content markdown-inner">
+    {{- .Content | $.Page.RenderString -}}
+  </div>  */}}
+{{- end -}}
+    </ul>
+</div>

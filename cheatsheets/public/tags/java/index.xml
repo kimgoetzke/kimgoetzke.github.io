@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Java on Cheatsheets</title>
+    <link>http://kimgoetzke.github.io/tags/java/</link>
+    <description>Recent content in Java on Cheatsheets</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Wed, 15 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://kimgoetzke.github.io/tags/java/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Regex</title>
+      <link>http://kimgoetzke.github.io/other/regex/</link>
+      <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://kimgoetzke.github.io/other/regex/</guid>
+      <description>Key resources Compose and testing expressions: https://regex101.com/ Regex number range generator: Regex Numeric Range Generator — Regex Tools — 3Widgets Shorthands for regex There are several pre-defined shorthands for the commonly used character sets:
+\d is any digit, short for [0-9] \s is a whitespace character (including tab and newline), short for [ \t\n\x0B\f\r] \w is an alphanumeric character (word), short for [a-zA-Z_0-9] \b is a word boundary A word boundary doesn&amp;rsquo;t match any specific character, it rather matches a boundary between an alphanumeric character and a non-alphanumeric character - for example, a whitespace character - or a boundary of the string (the end or the start of it) - examples: \ba matches any sequence of alphanumeric characters that starts with &amp;ldquo;a&amp;rdquo;, a\b matches any sequence of alphanumeric characters that ends with &amp;ldquo;a&amp;rdquo; \ba\b matches a separate &amp;ldquo;a&amp;rdquo; preceded and followed by non-alphanumeric characters There are also counterparts of these shorthands that are equivalent to the restrictive sets, and match everything except for the characters mentioned above:</description>
+    </item>
+    
+  </channel>
+</rss>

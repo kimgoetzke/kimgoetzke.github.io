@@ -1,0 +1,94 @@
+{{ define "main" }}
+<div class="columns">
+    <div class="column is-flex-shrink-0">
+
+        {{ partial "breadcrumbs.html" . }}
+
+        <div class="mx-5">
+            <h1 class="title is-1">{{ .Title }}</h1>
+
+            {{- with .Params.tags -}}
+            {{- if ge (len .) 1 -}}
+            {{- range . -}}
+
+            <a href="{{ $.Site.BaseURL }}tags/{{ . | urlize }}/">
+                <span class="tag is-primary"><ion-icon name="pricetag-outline"></ion-icon>&nbsp; {{ . }}</span>
+            </a>
+
+            {{ end -}}
+            {{- end -}}
+            {{- end -}}
+        </div>
+
+        <section class="section">
+            <article class="content" style="width:100%">
+            {{ .Content }}
+        </article>
+        </section>
+
+        {{ if or .PrevInSection .NextInSection }}
+        <section class="section">
+            <hr>
+
+            <nav class="level">
+                <div class="level-left">
+                    {{ with .PrevInSection }}
+                    <div class="has-text-left">
+                        <a href="{{ .Permalink }}">
+                            {{/* <p class="title is-6 has-text-grey-lighter mb-2">&nbsp;PREVIOUS</p> */}}
+                            <button class="button is-primary is-light">
+                                <span class="icon-text">
+                                    {{/* <span class="icon">
+                                        <i class="fas fa-train"></i>
+                                    </span> */}}
+                                    <span><ion-icon name="caret-back-outline"></ion-icon> {{.Title}}</span>
+                                </span>
+                            </button>
+                        </a>
+                    </div>
+                    {{ end }}
+                </div>
+
+                <div class="level-right">
+                    {{ with .NextInSection }}
+                    <div class="has-text-right">
+                        <a href="{{ .Permalink }}">
+                            {{/* <p class="title is-6 has-text-grey-lighter mb-1">NEXT UP&nbsp;</p> */}}
+                            <button class="button is-primary is-light">
+                                <span class="icon-text">
+                                    {{/* <span class="icon">
+                                        <i class="fas fa-train"></i>
+                                    </span> */}}
+                                    <span>{{.Title}} <ion-icon name="caret-forward-outline"></ion-icon></span>
+                                </span>
+                            </button>
+                        </a>
+                    </div>
+                    {{ end }}
+                </div>
+            </nav>
+        </section>
+        {{ end }}
+
+    </div>
+    <div class="column is-narrow">
+        <div class="toc-menu">
+
+            {{ if .Params.toc }}
+            <aside class="menu">
+                <p class="menu-label">
+                    On this page
+                </p>
+                <article class="content">
+                    <nav class="" id="vanilla-scrollspy">
+                        <a>{{ .TableOfContents }}</a>
+                    </nav>
+                </article>
+            </aside>
+            {{ end }}
+
+        </div>
+    </div>
+
+</div>
+{{ end }}

@@ -1,0 +1,38 @@
+{{ define "main" }}
+<div class="columns">
+    <div class="column">
+
+        {{ partial "breadcrumbs.html" . }}
+
+        <div class="mx-5">
+            <main class="container">
+                <h1 class="title is-1">{{ .Title }}</h1>
+                <div>
+                    {{ range .Pages }}
+                    {{ .Render "summary" }}
+                    {{ end }}
+                </div>
+            </main>
+        </div>
+
+    </div>
+    <div class="column is-narrow">
+        <div class="container toc-menu">
+
+            {{ if .Params.toc }}
+            <aside class="menu">
+                <p class="menu-label">
+                    On this page
+                </p>
+                <article class="content">
+                    <nav class="" id="vanilla-scrollspy">
+                        <a>{{ .TableOfContents }}</a>
+                    </nav>
+                </article>
+            </aside>
+            {{ end }}
+
+        </div>
+    </div>
+</div>
+{{ end }}

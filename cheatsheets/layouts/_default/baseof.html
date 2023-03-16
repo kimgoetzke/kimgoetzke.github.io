@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+  <link rel="stylesheet" href="/custom.css">
+  {{/*  <link rel="stylesheet" href="/debug.css">  */}}
+  <title>{{ block "title" . }}
+    {{ .Site.Title }}
+    {{ end }}</title>
+</head>
+
+<body>
+
+  <div class="columns">
+    <div class="column is-narrow has-background-light set-to-max-height">
+
+      <!-- Column 1: Site menu -->
+      <div class="mx-6 my-6">
+        {{ partial "navbar.html" . }}
+      </div>
+
+    </div>
+    <div class="column is-7">
+
+      <!-- Column 2: Page i.e. see list.html/single.html -->
+      {{ block "main" . }}
+      <!-- The part of the page that begins to differ between templates -->
+      {{ end }}
+
+    </div>
+    <div class="column is-flex-shrink-0"></div>
+  </div>
+
+
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script src="/vanillajs-scrollspy.min.js"></script>
+  <script>
+    const menu = document.querySelector('#vanilla-scrollspy')
+    const scrollspy = VanillaScrollspy({ menu })
+    scrollspy.init()
+  </script>
+
+</body>
+
+</html>

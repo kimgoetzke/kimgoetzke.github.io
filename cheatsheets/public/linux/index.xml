@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linux on Cheatsheets</title>
+    <link>http://kimgoetzke.github.io/linux/</link>
+    <description>Recent content in Linux on Cheatsheets</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 14 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://kimgoetzke.github.io/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Windows Subsystem for Linux</title>
+      <link>http://kimgoetzke.github.io/linux/wsl/</link>
+      <pubDate>Tue, 14 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://kimgoetzke.github.io/linux/wsl/</guid>
+      <description>Useful resources Basic commands for WSL: Basic commands for WSL | Microsoft Learn Useful commands List all available Linux distributions wsl --list --online List of installed Linux distributions wsl --list --verbose Update WSL wsl --update </description>
+    </item>
+    
+  </channel>
+</rss>

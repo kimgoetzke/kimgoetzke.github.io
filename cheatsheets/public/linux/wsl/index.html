@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+  <link rel="stylesheet" href="/custom.css">
+  
+  <title>
+    Cheatsheets
+    </title>
+</head>
+
+<body>
+
+  <div class="columns">
+    <div class="column is-narrow has-background-light set-to-max-height">
+
+      
+      <div class="mx-6 my-6">
+        <div class="box">
+    <figure class="image is-64x64 mt-4 mb-6 has-image-centered">
+        <a href="/">
+            <img class="is-rounded" src="/logo.png">
+        </a>
+    </figure>
+
+    
+
+    <aside class="menu">
+        
+
+        <p class="menu-label">
+            Docker
+        </p>
+        <ul class="menu-list">
+            
+            <li><a class="" href="http://kimgoetzke.github.io/docker/notes/">Getting Started</a>
+            </li>
+            
+            <li><a class="" href="http://kimgoetzke.github.io/docker/docker-commands/">Useful Docker commands</a>
+            </li>
+            
+        </ul>
+
+        
+
+        <p class="menu-label">
+            Linux
+        </p>
+        <ul class="menu-list">
+            
+            <li><a class="is-active" href="http://kimgoetzke.github.io/linux/wsl/">Windows Subsystem for Linux</a>
+            </li>
+            
+        </ul>
+
+        
+
+        <p class="menu-label">
+            Other
+        </p>
+        <ul class="menu-list">
+            
+            <li><a class="" href="http://kimgoetzke.github.io/other/regex/">Regex</a>
+            </li>
+            
+        </ul>
+
+        
+    </aside>
+</div>
+      </div>
+
+    </div>
+    <div class="column is-7">
+
+      
+      
+<div class="columns">
+    <div class="column is-flex-shrink-0">
+
+        <div class="level mt-6 mx-5">
+    <div class="level-left">
+
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                <li><a href="/">Cheatsheets</a></li>
+                <li><a href="/linux/">Linux</a></li>
+                <li class="is-active"><a href="/linux/wsl/">Windows Subsystem for Linux</a></li>
+            </ul>
+        </nav>
+
+    </div>
+</div>
+
+        <div class="mx-5">
+            <h1 class="title is-1">Windows Subsystem for Linux</h1><a href="http://kimgoetzke.github.io/tags/wsl/">
+                <span class="tag is-primary"><ion-icon name="pricetag-outline"></ion-icon>&nbsp; WSL</span>
+            </a>
+
+            <a href="http://kimgoetzke.github.io/tags/linux/">
+                <span class="tag is-primary"><ion-icon name="pricetag-outline"></ion-icon>&nbsp; Linux</span>
+            </a>
+
+            <a href="http://kimgoetzke.github.io/tags/windows/">
+                <span class="tag is-primary"><ion-icon name="pricetag-outline"></ion-icon>&nbsp; Windows</span>
+            </a>
+
+            </div>
+
+        <section class="section">
+            <article class="content" style="width:100%">
+            <h2 id="useful-resources">Useful resources</h2>
+<ul>
+<li>Basic commands for WSL: <a href="https://learn.microsoft.com/en-us/windows/wsl/basic-commands#list-installed-linux-distributions">Basic commands for WSL | Microsoft Learn</a></li>
+</ul>
+<h2 id="useful-commands">Useful commands</h2>
+<h3 id="list-all-available-linux-distributions">List all available Linux distributions</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>wsl --list --online
+</span></span></code></pre></div><h3 id="list-of-installed-linux-distributions">List of installed Linux distributions</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>wsl --list --verbose
+</span></span></code></pre></div><h3 id="update-wsl">Update WSL</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>wsl --update
+</span></span></code></pre></div>
+        </article>
+        </section>
+
+        
+
+    </div>
+    <div class="column is-narrow">
+        <div class="toc-menu">
+
+            
+
+        </div>
+    </div>
+
+</div>
+
+
+    </div>
+    <div class="column is-flex-shrink-0"></div>
+  </div>
+
+
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script src="/vanillajs-scrollspy.min.js"></script>
+  <script>
+    const menu = document.querySelector('#vanilla-scrollspy')
+    const scrollspy = VanillaScrollspy({ menu })
+    scrollspy.init()
+  </script>
+
+</body>
+
+</html>

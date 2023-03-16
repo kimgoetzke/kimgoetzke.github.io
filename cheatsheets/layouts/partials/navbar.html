@@ -1,0 +1,25 @@
+<div class="box">
+    <figure class="image is-64x64 mt-4 mb-6 has-image-centered">
+        <a href="/">
+            <img class="is-rounded" src="/logo.png">
+        </a>
+    </figure>
+
+    {{ $currentPage := .Page }}
+
+    <aside class="menu">
+        {{ range .Site.Sections }}
+
+        <p class="menu-label">
+            {{ .Title }}
+        </p>
+        <ul class="menu-list">
+            {{ range .Pages }}
+            <li><a class="{{ if eq .Page $currentPage }}is-active{{ end }}" href="{{ .Permalink }}">{{ .Title }}</a>
+            </li>
+            {{ end }}
+        </ul>
+
+        {{ end }}
+    </aside>
+</div>

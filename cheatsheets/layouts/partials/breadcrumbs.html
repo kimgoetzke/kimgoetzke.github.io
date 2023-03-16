@@ -1,0 +1,14 @@
+<div class="level mt-6 mx-5">
+    <div class="level-left">
+
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                {{- range .Ancestors.Reverse }}
+                <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+                {{- end }}
+                <li class="is-active"><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+            </ul>
+        </nav>
+
+    </div>
+</div>

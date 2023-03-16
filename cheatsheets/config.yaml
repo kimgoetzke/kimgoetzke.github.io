@@ -1,0 +1,11 @@
+baseURL: 'http://kimgoetzke.github.io/'
+languageCode: 'en-gb'
+title: 'Cheatsheets'
+
+taxonomies:
+  tag: tags
+
+menu:
+  nav:
+    - name: Tags
+      url: /tags/
