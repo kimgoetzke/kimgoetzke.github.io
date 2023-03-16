@@ -18,7 +18,6 @@
     overflow-y: auto;
 }
 
-
 .set-to-max-height {
     min-height: 100vh;
     overflow-y: auto;
@@ -27,8 +26,14 @@
 .has-image-centered {
     margin-left: auto;
     margin-right: auto;
-  }
+}
 
 nav a.active {
     font-weight: bold;
+}
+
+/* For testing only */
+
+body {
+    position: relative;
 }

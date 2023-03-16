@@ -1,4 +1,4 @@
-baseURL: 'http://kimgoetzke.github.io/cheatsheets/'
+baseURL: 'http://kimgoetzke.github.io/'
 languageCode: 'en-gb'
 title: 'Cheatsheets'
 canonifyurls: true
