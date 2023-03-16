@@ -33,16 +33,6 @@
     margin-right: auto;
 }
 
-pre code {
-    /* width: 100%; */
-    overflow-x: auto;
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
-    word-wrap: break-word;
-}
-
 .custom-hint {
     width: 100%;
 }
@@ -95,3 +85,46 @@ input[type="radio"][value="custom"]:checked+label {
 body {
     position: relative;
 }
+
+/* *,
+*:before,
+*:after {
+  box-sizing: border-box;
+} */
+
+pre {
+  position: relative;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+pre code {
+    overflow-x: auto;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+}
+
+pre button {
+  position: absolute;
+  color: hsl(0, 0%, 96%);
+  top: 5px;
+  right: 5px;
+  font-size: 0.9rem;
+  padding: 0.15rem;
+  background-color: hsl(0, 0%, 21%);
+  border: ridge 1px hsl(0, 0%, 86%);
+  border-radius: 5px;
+}
+
+pre button:hover {
+  cursor: pointer;
+  background-color: hsl(0, 0%, 29%);
+}
+
+pre button:active {
+    cursor: pointer;
+    background-color: hsl(0, 0%, 48%);
+  }

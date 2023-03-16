@@ -10,3 +10,6 @@ menu:
   nav:
     - name: Tags
       url: /tags/
+
+params:
+  GithubEdit: 'https://github.com/kimgoetzke/kimgoetzke.github.io/edit/main/content/'

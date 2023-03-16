@@ -22,15 +22,15 @@
 
         <section class="section">
             <article class="content" style="width:100%">
-            {{ .Content }}
-        </article>
+                {{ .Content }}
+            </article>
         </section>
 
-        {{ if or .PrevInSection .NextInSection }}
         <section class="section">
             <hr>
 
             <nav class="level">
+                {{ if .PrevInSection }}
                 <div class="level-left">
                     {{ with .PrevInSection }}
                     <div class="has-text-left">
@@ -48,7 +48,27 @@
                     </div>
                     {{ end }}
                 </div>
+                {{ end }}
 
+                {{ if and .PrevInSection (not .NextInSection) }}
+                <div class="level-right">
+                {{ else if and .NextInSection (not .PrevInSection) }}
+                <div class="level-left">
+                {{ else }}
+                <div class="level-item">
+                {{ end }}
+
+                    {{ if .IsPage}}
+                    {{ if .File.Path}}
+                    {{ $.Scratch.Set "FilePath" .File.Path }}
+                    {{ end }}
+                    {{ with .Site.Params.GithubEdit}}
+                    <a href='{{ . }}{{ $.Scratch.Get "FilePath" }}'><ion-icon name="create-outline"></ion-icon> Edit this page</a>
+                    {{ end }}
+                    {{ end }}
+                </div>
+
+                {{ if .NextInSection }}
                 <div class="level-right">
                     {{ with .NextInSection }}
                     <div class="has-text-right">
@@ -66,9 +86,9 @@
                     </div>
                     {{ end }}
                 </div>
+                {{ end }}
             </nav>
         </section>
-        {{ end }}
 
     </div>
     <div class="column is-narrow">

@@ -7,7 +7,7 @@ tags: [Docker, Linux, Windows]
 toc: true
 ---
 ## Install Docker
-{{< tabs "uniqueid" >}}
+{{< tabs "groupid-1" >}}
 {{< tab "Windows" >}} 
 
 ### Windows
@@ -29,6 +29,7 @@ _Optional:_
 {{< tab "Linux" >}}
 
 ### Linux
+
 > The below is for Debian based distributions such as Ubuntu.
 
  - Simply follow the instructions on the Docker website: [Install Docker Desktop on Ubuntu | Docker Documentation](https://docs.docker.com/desktop/install/ubuntu/)
