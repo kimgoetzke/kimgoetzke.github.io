@@ -8,6 +8,7 @@
     overflow-y: auto;
     width: 300px;
     top: 50px;
+    padding-left: 24px;
 }
 
 .content {
