@@ -15,7 +15,8 @@ toc: true
 
 ## Shorthands for regex
 
-There are several pre-defined shorthands for the commonly used character sets:
+### Pre-defined shorthands 
+
 - `\d` is any digit, short for `[0-9]`
 - `\s` is a whitespace character (including tab and newline), short for `[ \t\n\x0B\f\r]`
 - `\w` is an alphanumeric character (word), short for `[a-zA-Z_0-9]`
@@ -25,14 +26,14 @@ There are several pre-defined shorthands for the commonly used character sets:
         - `a\b` matches any sequence of alphanumeric characters that ends with "a"
         - `\ba\b` matches a separate "a" preceded and followed by non-alphanumeric characters
 
-There are also counterparts of these shorthands that are equivalent to the restrictive sets, and match everything except for the characters mentioned above:
+### Counterparts for shorthands 
+
 - `\D` is a non-digit, short for `[^0-9]`
 - `\S` is a non-whitespace character, short for `[^ \t\n\x0B\f\r]`
 - `\W` is a non-alphanumeric character, short for `[^a-zA-Z_0-9]`
 - `\B` is a non-word boundary
     - A non-word boundary matches the situation opposite to that one of the `\b` shorthand: it finds its match every time whenever there is no "gap" between alphanumeric characters - examples:
         - `a\B` matches a part of a string that starts with "a" followed by any alphanumeric character which, in its turn, is not followed by a word or a string boundary
-
 
 ## Any char
 
@@ -98,8 +99,9 @@ String regex = "1{2,3}";
 "1111".matches(regex); // false
 ```
 
-> An important clarification: Don't use spaces inside the curly braces. For example, `a{1, 2}` will match only the exact string "a{1, 2}", not "a" or "aa".
-
+{{< hint info >}}
+An important clarification: Don't use spaces inside the curly braces. For example, `a{1, 2}` will match only the exact string "a{1, 2}", not "a" or "aa".
+{{< /hint >}}
 
 ## Case insensitivity
 
@@ -121,7 +123,10 @@ You just need to add `(?i)` at the beginning of your regex. To make the dot char
 It is easy to define which characters are not wanted by writing the hat character `^` as the first one in the set.
 
 - `^` - Any character, except the following
-> Important: Must be inside the brackets e.g. `[^0-9]` - see [Beginning or end of line](#beginning-or-end-of-line) otherwise. 
+
+{{< hint info >}}
+Important: Must be inside the brackets e.g. `[^0-9]` - see [Beginning or end of line](#beginning-or-end-of-line) otherwise. 
+{{< /hint >}}
 
 ### Capturing vs non-capturing groups
 
@@ -152,7 +157,7 @@ It is easy to define which characters are not wanted by writing the hat characte
 ```re
 ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
 ```
-- Case insensitive
+- Is case insensitive
 
 ## Regex in Java
 
@@ -161,7 +166,10 @@ It is easy to define which characters are not wanted by writing the hat characte
 - Use escape characters to protect a regex special symbol by putting the backslash `\`
 - Note that when you want to use the backslash (`\`) itself in its literal meaning, you need to escape it as well - This way, a double backslash (`\\`) in your regex means a single backslash in the matching string
 
-> It gets more complicated when you implement such patterns in Java. The backslash works as an escape character not only for regular expressions but for String literals as well. So, in fact, we have to use an additional backslash to escape the one we need in the regular expression, just like this:
+{{< hint info >}}
+It gets more complicated when you implement such patterns in Java. The backslash works as an escape character not only for regular expressions but for String literals as well. So, in fact, we have to use an additional backslash to escape the one we need in the regular expression, just like this:
+{{< /hint >}}
+
 ```java
 String pattern = ".....\\.";
 

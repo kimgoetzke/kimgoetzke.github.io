@@ -1,14 +1,16 @@
 ---
-title: Getting Started
+title: Getting started
 draft: false
 date: 2023-03-14
 series: [ "Docker" ]
 tags: [Docker, Linux, Windows]
+toc: true
 ---
-
 ## Install Docker
 {{< tabs "uniqueid" >}}
 {{< tab "Windows" >}} 
+
+### Windows
 
 - Download `Docker for Windows` from www.docker.com
 - Check the system requirements for Docker: [Install on Windows | Docker Documentation](https://docs.docker.com/desktop/install/windows-install/)
@@ -23,12 +25,11 @@ _Optional:_
 - Set up Docker with IntelliJ by downloading Docker plugin (which should configure everything automatically): [Docker in IntelliJ IDEA - YouTube](https://www.youtube.com/watch?v=ck6xQqSOlpw&t=49s)
 - Install VS Code extension for Docker (VS Code will prompt you automatically as it detects the Docker installation)
 
- {{< /tab >}}
- {{< tab "Linux" >}}
+{{< /tab >}}
+{{< tab "Linux" >}}
 
-{{< hint info >}}
-The below is for Debian based distributions such as Ubuntu.
-{{< /hint >}}
+### Linux
+> The below is for Debian based distributions such as Ubuntu.
 
  - Simply follow the instructions on the Docker website: [Install Docker Desktop on Ubuntu | Docker Documentation](https://docs.docker.com/desktop/install/ubuntu/)
 
@@ -36,7 +37,5 @@ _Optional:_
 - Set up Docker with IntelliJ by downloading Docker plugin (which should configure everything automatically): [Docker in IntelliJ IDEA - YouTube](https://www.youtube.com/watch?v=ck6xQqSOlpw&t=49s)
 - Install VS Code extension for Docker (VS Code will prompt you automatically as it detects the Docker installation)
 
- {{< /tab >}}
+{{< /tab >}}
 {{< /tabs >}}
-
-

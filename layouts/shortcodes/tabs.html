@@ -1,14 +1,17 @@
 {{ if .Inner }}{{ end }}
+
 {{ $id := .Get 0 }}
 {{ $group := printf "tabs-%s" $id }}
 
-<div class="tabs is-centered is-boxed">
-    <ul>
-{{- range $index, $tab := .Scratch.Get $group -}}
-  <li><a>{{- $tab.Name -}}</a></li>
-  {{/*  <div class="tabs-content markdown-inner">
-    {{- .Content | $.Page.RenderString -}}
-  </div>  */}}
-{{- end -}}
-    </ul>
+<div class="custom-tabs">
+    {{- range $index, $tab := .Scratch.Get $group -}}
+    <input type="radio" value="custom" class="radio" name="{{ $group }}" id="{{ printf " %s-%d" $group $index }}" {{ if
+        not $index }}checked="checked" {{ end }} />
+    <label class="radio mr-6 custom-tabs-control" for="{{ printf " %s-%d" $group $index }}">
+        {{- $tab.Name -}}
+    </label>
+    <div class="custom-tabs-content mt-4 mb-0">
+        {{- .Content | $.Page.RenderString -}}
+    </div>
+    {{- end -}}
 </div>

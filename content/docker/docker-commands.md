@@ -12,6 +12,7 @@ toc: true
 ```shell
 docker images
 ```
+The above is the same as:
 ```shell
 docker image ls
 ```
@@ -34,7 +35,7 @@ The parameter `-a` will include stopped containers.
 docker ps -a
 ```
 
-> List all *and* don't truncate columns (for example, to see entrypoints)
+List all *and* don't truncate columns (for example, to see entrypoints):
 ```shell
 docker ps --no-trunc
 ```
@@ -45,7 +46,9 @@ docker image rm [image_id]
 ```
 
 ### Remove all image
-> This command will result in an error if an image currently used in a container.
+{{< hint warning >}}
+This command will result in an error if an image currently used in a container.
+{{< /hint >}}
 ```shell
 docker image rm $(docker image ls -q)
 ```
@@ -61,7 +64,7 @@ docker run --name [name_of_container] [image_name_to_use]
 ```
 
 ### Go into container
-> Execute bash inside container with an abbreviated or full id (e.g. `5a432b61b585`).
+Execute bash inside container with an abbreviated or full id (e.g. `5a432b61b585`):
 
 {{< hint info >}}
 The parameter `-it` stands for interactive mode.
@@ -84,13 +87,12 @@ docker compose down
 
 ## Docker & Postgres
 ### Create Postgres database container
+Create and run a container with... 
+- name=`db`
+- mapping port `5432` to the same local port
+- setting password=`password` and username=`username`
+- creates a db with the name `postgres`
+- and uses image `postgres` to create the container:
 ```shell
-docker run -d --name db -p 5432:5432 -e POSTGRES_PASSWORD=password / 
-    -e POSTGRES_USER=postgres -e POSTGRES_DB=postgres_db postgres
+docker run -d --name db -p 5432:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_USER=postgres -e POSTGRES_DB=postgres_db postgres
 ```
-> Creates and runs container with... 
-> - name=`db`
-> - mapping port `5432` to the same local port
-> - setting password=`password` and username=`username`
-> - creates a db with the name `postgres`
-> - and uses image `postgres` to create the container.

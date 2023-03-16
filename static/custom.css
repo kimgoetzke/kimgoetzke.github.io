@@ -1,3 +1,5 @@
+/* Custom table of contents: Start */
+
 .toc-menu {
     position: sticky;
     display: inline-block;
@@ -6,12 +8,14 @@
     overflow-y: auto;
     width: 300px;
     top: 50px;
-    bottom: 0;
 }
 
 .content {
     display: inline-block;
 }
+
+/* Custom table of contents: End */
+/* Other: Start */
 
 .set-to-max-width {
     min-width: 960px;
@@ -28,9 +32,62 @@
     margin-right: auto;
 }
 
+pre code {
+    /* width: 100%; */
+    overflow-x: auto;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+}
+
+.custom-hint {
+    width: 100%;
+}
+
+/* Other: End */
+/* Scrollspy: Start */
+
 nav a.active {
     font-weight: bold;
 }
+
+/* Scrollspy: End */
+/* Custom tabs with radio buttons: Start */
+
+.custom-tabs {
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.custom-tabs-control {
+    background-color: hsl(0, 0%, 86%);
+    border-radius: 8px;
+    border: none;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.custom-tabs-content {
+    order: 999;
+    width: 100%;
+    display: none;
+}
+
+input[type="radio"][value="custom"]:checked+label+.custom-tabs-content {
+    display: block;
+}
+
+input[type="radio"][value="custom"]:checked+label {
+    background-color: hsl(0, 0%, 48%);
+}
+
+/* Custom tabs with radio buttons: End */
 
 /* For testing only */
 
