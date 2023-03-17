@@ -1,5 +1,5 @@
 {{ define "main" }}
-<div class="columns">
+<div class="columns is-multiline">
     <div class="column is-flex-shrink-0">
 
         {{ partial "breadcrumbs.html" . }}
@@ -35,12 +35,8 @@
                     {{ with .PrevInSection }}
                     <div class="has-text-left">
                         <a href="{{ .Permalink }}">
-                            {{/* <p class="title is-6 has-text-grey-lighter mb-2">&nbsp;PREVIOUS</p> */}}
                             <button class="button is-primary is-light">
                                 <span class="icon-text">
-                                    {{/* <span class="icon">
-                                        <i class="fas fa-train"></i>
-                                    </span> */}}
                                     <span class="icon"><ion-icon name="caret-back-outline"></ion-icon></span><span> {{.Title}}</span>
                                 </span>
                             </button>
@@ -73,12 +69,8 @@
                     {{ with .NextInSection }}
                     <div class="has-text-right">
                         <a href="{{ .Permalink }}">
-                            {{/* <p class="title is-6 has-text-grey-lighter mb-1">NEXT UP&nbsp;</p> */}}
                             <button class="button is-primary is-light">
                                 <span class="icon-text">
-                                    {{/* <span class="icon">
-                                        <i class="fas fa-train"></i>
-                                    </span> */}}
                                     <span>{{.Title}} </span><span class="icon"><ion-icon name="caret-forward-outline"></ion-icon></span>
                                 </span>
                             </button>
@@ -91,7 +83,7 @@
         </section>
 
     </div>
-    <div class="column is-narrow">
+    <div class="column is-full-mobile is-narrow-desktop">
         <div class="toc-menu mb-6">
 
             {{ partial "toc.html" . }}

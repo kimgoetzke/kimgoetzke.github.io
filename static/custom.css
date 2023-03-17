@@ -6,9 +6,14 @@
     vertical-align: top;
     max-height: 100vh;
     overflow-y: auto;
-    width: 300px;
     top: 50px;
     padding-left: 24px;
+}
+
+@media all and (min-width: 1675px) {
+    .toc-menu {
+        width: 300px;
+    }
 }
 
 .content {
@@ -79,23 +84,12 @@ input[type="radio"][value="custom"]:checked+label {
 }
 
 /* Custom tabs with radio buttons: End */
-
-/* For testing only */
-
-body {
-    position: relative;
-}
-
-/* *,
-*:before,
-*:after {
-  box-sizing: border-box;
-} */
+/* Code copy: Start */
 
 pre {
-  position: relative;
-  margin: 5px 0;
-  border-radius: 5px;
+    position: relative;
+    margin: 5px 0;
+    border-radius: 5px;
 }
 
 pre code {
@@ -108,23 +102,27 @@ pre code {
 }
 
 pre button {
-  position: absolute;
-  color: hsl(0, 0%, 96%);
-  top: 5px;
-  right: 5px;
-  font-size: 0.9rem;
-  padding: 0.15rem;
-  background-color: hsl(0, 0%, 21%);
-  border: ridge 1px hsl(0, 0%, 86%);
-  border-radius: 5px;
+    position: absolute;
+    color: hsl(0, 0%, 96%);
+    top: 5px;
+    right: 5px;
+    font-size: 0.9rem;
+    padding: 0.15rem;
+    background-color: hsl(0, 0%, 21%);
+    border: ridge 1px hsl(0, 0%, 86%);
+    border-radius: 5px;
 }
 
 pre button:hover {
-  cursor: pointer;
-  background-color: hsl(0, 0%, 29%);
+    cursor: pointer;
+    background-color: hsl(0, 0%, 29%);
 }
 
 pre button:active {
     cursor: pointer;
     background-color: hsl(0, 0%, 48%);
-  }
+}
+
+/* Code copy: End */
+/* For testing only */
+
