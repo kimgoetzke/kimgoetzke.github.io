@@ -12,17 +12,48 @@
   <section class="hero is-primary is-fullheight is-align-items-center">
     <div class="hero-body">
 
-      <div class="container has-text-centered">
-        <figure class="image is-128x128 my-4">
-          <a class=""><img class="is-rounded" src="/logo.png"></a>
-        </figure>
-        <a href="{{ $.Site.BaseURL }}tags/">
-          <button class="button is-dark is-rounded">Cheatsheets</button>
-        </a>
+      <div class="tile is-ancestor">
+        <div class="tile is-vertical is-parent">
+          <div class="tile is-child">
+
+            <div class="column">
+            <figure class="image is-128x128 my-4" style="margin: auto;">
+              <img class="is-rounded" src="/logo.png">
+            </figure>
+          </div>
+
+          </div>
+          <div class="tile is-child">
+
+            <div class="field has-addons">
+              <p class="control">
+                <a href="https://github.com/kimgoetzke/">
+                  <button class="button is-dark is-rounded is-outlined" style="width: 150px;">
+                    <ion-icon name="logo-github"></ion-icon>
+                    &nbsp;&nbsp;GitHub
+                  </button>
+                </a>
+              </p>
+              <p class="control">
+                <a href="{{ $.Site.BaseURL }}tags/">
+                  <button class="button is-dark is-rounded is-outlined" style="width: 150px;">
+                    <ion-icon name="flash"></ion-icon>
+                    &nbsp;&nbsp;Cheatsheets
+                  </button>
+                </a>
+              </p>
+            </div>
+
+          </div>
+        </div>
       </div>
+
 
     </div>
   </section>
+
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </body>
 
 </html>

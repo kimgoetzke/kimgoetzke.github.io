@@ -37,7 +37,8 @@
                         <a href="{{ .Permalink }}">
                             <button class="button is-primary is-light">
                                 <span class="icon-text">
-                                    <span class="icon"><ion-icon name="caret-back-outline"></ion-icon></span><span> {{.Title}}</span>
+                                    <span class="icon"><ion-icon name="caret-back-outline"></ion-icon></span>
+                                    <span>{{.Title}}</span>
                                 </span>
                             </button>
                         </a>
@@ -48,37 +49,43 @@
 
                 {{ if and .PrevInSection (not .NextInSection) }}
                 <div class="level-right">
-                {{ else if and .NextInSection (not .PrevInSection) }}
-                <div class="level-left">
-                {{ else }}
-                <div class="level-item">
-                {{ end }}
+                    {{ else if and .NextInSection (not .PrevInSection) }}
+                    <div class="level-left">
+                        {{ else }}
+                        <div class="level-item">
+                            {{ end }}
 
-                    {{ if .IsPage}}
-                    {{ if .File.Path}}
-                    {{ $.Scratch.Set "FilePath" .File.Path }}
-                    {{ end }}
-                    {{ with .Site.Params.GithubEdit}}
-                    <a href='{{ . }}{{ $.Scratch.Get "FilePath" }}'><ion-icon name="create-outline"></ion-icon> Edit this page</a>
-                    {{ end }}
-                    {{ end }}
-                </div>
+                            {{ if .IsPage}}
+                            {{ if .File.Path}}
+                            {{ $.Scratch.Set "FilePath" .File.Path }}
+                            {{ end }}
+                            {{ with .Site.Params.GithubEdit}}
+                            <a href='{{ . }}{{ $.Scratch.Get "FilePath" }}'>
+                                <ion-icon name="create-outline"></ion-icon>
+                                Edit this page
+                            </a>
+                            {{ end }}
+                            {{ end }}
+                        </div>
 
-                {{ if .NextInSection }}
-                <div class="level-right">
-                    {{ with .NextInSection }}
-                    <div class="has-text-right">
-                        <a href="{{ .Permalink }}">
-                            <button class="button is-primary is-light">
-                                <span class="icon-text">
-                                    <span>{{.Title}} </span><span class="icon"><ion-icon name="caret-forward-outline"></ion-icon></span>
-                                </span>
-                            </button>
-                        </a>
-                    </div>
-                    {{ end }}
-                </div>
-                {{ end }}
+                        {{ if .NextInSection }}
+                        <div class="level-right">
+                            {{ with .NextInSection }}
+                            <div class="has-text-right">
+                                <a href="{{ .Permalink }}">
+                                    <button class="button is-primary is-light">
+                                        <span class="icon-text">
+                                            <span>{{.Title}} </span>
+                                            <span class="icon">
+                                                <ion-icon name="caret-forward-outline"></ion-icon>
+                                            </span>
+                                        </span>
+                                    </button>
+                                </a>
+                            </div>
+                            {{ end }}
+                        </div>
+                        {{ end }}
             </nav>
         </section>
 

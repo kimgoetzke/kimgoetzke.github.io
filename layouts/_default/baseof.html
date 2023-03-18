@@ -7,13 +7,14 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
   <link rel="stylesheet" href="/custom.css">
   {{/* <link rel="stylesheet" href="/debug.css"> */}}
-  <title>{{ block "title" . }}
+  <title>
+    {{ block "title" . }}
     {{ .Site.Title }}
-    {{ end }}</title>
+    {{ end }}
+  </title>
 </head>
 
 <body>
-
   <div class="columns mb-0">
     <div class="column is-narrow has-background-light set-to-max-height">
 
@@ -21,6 +22,9 @@
       <div class="mx-6 my-6">
         {{ partial "navbar.html" . }}
       </div>
+
+      <!-- Scroll to top button -->
+      <button class="button is-link" id="scroll-up-button" onclick="scrollUp()"><ion-icon name="arrow-up"></ion-icon> Top</button>
 
     </div>
     <div class="column is-7-desktop is-9-tablet">
@@ -37,12 +41,7 @@
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
   <script src="/code-copy.js"></script>
-  <script src="/vanillajs-scrollspy.min.js"></script>
-  <script>
-    const menu = document.querySelector('#vanilla-scrollspy')
-    const scrollspy = VanillaScrollspy({ menu })
-    scrollspy.init()
-  </script>
+  <script src="/scroll-up-button.js"></script>
 
 </body>
 
