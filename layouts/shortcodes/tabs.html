@@ -3,6 +3,7 @@
 {{ $id := .Get 0 }}
 {{ $group := printf "tabs-%s" $id }}
 
+<div class="box">
 <div class="custom-tabs">
     {{- range $index, $tab := .Scratch.Get $group -}}
     <input type="radio" value="custom" class="radio" name="{{ $group }}" id="{{ printf " %s-%d" $group $index }}" {{ if
@@ -11,7 +12,9 @@
         {{- $tab.Name -}}
     </label>
     <div class="custom-tabs-content mt-4 mb-0">
+        <hr class="mt-0">
         {{- .Content | $.Page.RenderString -}}
     </div>
     {{- end -}}
+</div>
 </div>
