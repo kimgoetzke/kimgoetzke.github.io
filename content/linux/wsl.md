@@ -21,17 +21,33 @@ If you don't want to install Ubuntu visit https://learn.microsoft.com/en-us/wind
 
 ## Useful commands
 ### List all available Linux distributions
-```shell
+```powershell
 wsl --list --online
 ```
 
 ### List of installed Linux distributions
 
-```shell
+```powershell
 wsl --list --verbose
 ```
 
 ### Update WSL
-```shell
+```powershell
 wsl --update
+```
+
+## Troubleshooting
+
+## Slow network or unable to fetch updates
+
+If you 1) get errors such as `Failed to fetch http://archive.ubuntu.com/ubuntu/dists/jammy/InRelease  Temporary failure resolving 'archive.ubuntu.com'` and/or 2) the network speed when installing updates seems incredibly slow, and/or 3) you cannot install basic apps such as `ranger` because of an `Unable to locate package` error, then it's likely a DNS issue. You can resolve it by:
+
+1. Opening /etc/resolv.conf
+```shell
+sudo nano /etc/resolv.conf   
+```
+
+2. Changing the nameserver
+```shell
+nameserver 1.1.1.1 # Cloudflare
 ```
