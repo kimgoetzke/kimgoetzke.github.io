@@ -33,6 +33,14 @@ Get `ranger` (console file manager) to improve the entire navigation experience.
 . ~/.bashrc
 ```
 
+### Create a symlink
+```bash
+ln -s [target_path] [link_path]
+
+# Example: Links the .ssh folder inside a WSL to the corresponding folder on Windows
+ln -s ~/.ssh /mnt/c/Users/Kim/.ssh
+```
+
 ### Set a variable
 ```bash
 echo "Please enter a bucket name: "; read bucket; export MYBUCKET=$bucket
