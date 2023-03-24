@@ -13,7 +13,7 @@ ls # List contents of directory
 ```
 
 {{< hint info >}}
-Add `-1` to display results in a single column. Add `-l` to see more details. Use `ls "/[dir_name]"` to set absolute path and navigate there. 
+Add `-1` to display results in a single column. Add `-l` to see more details. Add `-a` to show hidden files and folders. Use `ls "/[dir_name]"` to set absolute path and navigate there. 
 {{< /hint >}}
 
 
@@ -38,7 +38,8 @@ Get `ranger` (console file manager) to improve the entire navigation experience.
 ln -s [target_path] [link_path]
 
 # Example: Links the .ssh folder inside a WSL to the corresponding folder on Windows
-ln -s ~/.ssh /mnt/c/Users/Kim/.ssh
+# i.e. a shortcut at ~/.ssh will be created that, when opened, will show the contents of C:\Users\Kim\.ssh
+ln -s /mnt/c/Users/Kim/.ssh ~/.ssh
 ```
 
 ### Set a variable
@@ -93,6 +94,32 @@ head -5 [file_name] # Display first 5 rows of file
 head -c 5 [file_name] # Display first 5 characters of file
 tail -5 [file_name] # Display last 5 rows of file
 ```
+
+### Working with SSH
+```bash
+# List all added keys
+ssh-add -l
+
+# Generate a new key using ed25519 algorithm and adding your email as meta data
+ssh-keygen -t ed25519 -C "[your_github_email@example.com]"
+
+# Show fingerprint of a generated key
+ssh-keygen -lf ~/.ssh/id_ed25519.pub
+
+# Copy public key to server
+ssh-copy-id -i ~/.ssh/[id_ed25519.pub] [username]@[ip]
+```
+
+```
+# Example configuration to store in ~/.ssh/config 
+Host [server_name]
+    HostName [x.y.z.w or url]
+    IdentityFile [~/.ssh/id_ed25519]
+    IdentitiesOnly yes
+    User [username]
+    Port [port]
+```
+
 
 ## Bash scripts
 
