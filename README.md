@@ -1,4 +1,4 @@
-# About
+# About this project
 
 Visit https://kimgoetzke.github.io/ to launch this page.
 
