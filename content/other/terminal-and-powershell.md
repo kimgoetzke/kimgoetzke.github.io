@@ -15,7 +15,14 @@ toc: true
 - Use `CTRL` + `Space` to show "MenuComplete" i.e. available options based on the input provided so far
 - Use `Arrow key (right)` for basic auto-complete
 - Set up advanced auto-complete - see [this article](https://techcommunity.microsoft.com/t5/itops-talk-blog/autocomplete-in-powershell/ba-p/2604524)
+- Toggle command history with `F2`
 
+## Customise Terminal default layout
+
+1. Create a desktop shortcut
+2. Set the target as `C:\Users\[Username]\AppData\Local\Microsoft\WindowsApps\wt.exe` 
+3. Append any customisations to the above target, e.g. ` -p "PowerShell 7 (x86)" ; split-pane -H -p "Ubuntu"` to open with two horizontal panes with Powershell and Bash
+4. Add a keyboard shortcut and/or select `Open as Administrator` if you want
 
 ## Basic Terminal commands
 
@@ -51,22 +58,24 @@ wget [URL + file_name]
 Expand-Archive ./filetounzip.zip ./folder-to-extract-to
 ```
 
-### Print environment variables in PowerShell
-```powershell
-echo $env:JAVA_HOME
-```
-
 ### Find directory of a process
 ```powershell
 Get-Process -Id $PID # Name of current shell you are running
 (Get-Process [outcome_of_above] | select -First 1).Path # Returns absolute directory
 ```
 
-### Get and set variables
+### Using variables
+Get environment variable:
 ```powershell
-Get-Variable -Name "desc"
+echo $env:JAVA_HOME
 ```
 
+Get variable:
+```powershell
+Get-Variable -Name "VARIABLE_NAME"
+```
+
+Set variable:
 {{< hint warning >}}
 The below won't set the variable permanently. If you want to retain the variable beyond the current session, consider adding it to your profile.
 {{< /hint >}}
@@ -91,30 +100,24 @@ Set-Variable
    [<CommonParameters>]
 ```
 
-### Open profile
+### Working with your Powershell profile
+Open the profile:
 ```powershell
-notepad $profile
+code $profile
 ```
 
-### Add variable to profile
+Add variable to profile:
 ```powershell
-# Step 1: Open your profile
-notepad $profile
-
-# Step 2: Add the variable
+# Paste variable you want to set into your profile like this:
 Set-Variable -Name "LOCAL_POSTGRES_PASSWORD" -Value "password" -Scope global 
-
-# Step 3: Reload the profile
-.$profile
 ```
 
-### Reload/refresh profile
+Reload/refresh profile:
 ```powershell
 .$profile
 ```
 
-
-## Useful scripts
+## Useful scripts/snippents
 
 ### Switch between different Java versions
 
@@ -145,3 +148,30 @@ Write-Host Java 17 activated.
 {{< hint link >}}
 The above is inspired by: [How to Change Java Versions in Windows (happycoders.eu)](https://www.happycoders.eu/java/how-to-switch-multiple-java-versions-windows/).
 {{< /hint >}}
+
+### Show list of options for incomplete prompt
+
+1. Update your profile
+
+```powershell
+Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
+```
+
+2. When typing a prompt, press the `Tab` key to display available options to choose from
+
+
+### Copy port number for Docker container to clipboard
+
+This is useful when working with Docker containers with random ports that you need to access frequently.
+Example for Mysql container:
+
+```powershell
+$sql_docker_container=$(docker ps | Select-String -Pattern "mysql:")
+if ($null -eq $sql_docker_container) {
+  Write-Host "Port number not found. Check if Mysql container is running."
+} else {
+  $port_number=$sql_docker_container -replace '.*:(\d+).*', '$1' | ForEach-Object { $_.Trim() }
+  Set-Clipboard -Value $port_number
+  Write-Host "Mysql port number ($port_number) copied to clipboard."
+}
+```
