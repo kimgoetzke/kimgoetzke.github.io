@@ -2,7 +2,7 @@
 title: Terminal & PowerShell
 draft: false
 date: 2023-03-17
-series: [ "Other" ]
+series: [ "Powershell" ]
 tags: [Windows, Terminal, PowerShell]
 toc: true
 ---
