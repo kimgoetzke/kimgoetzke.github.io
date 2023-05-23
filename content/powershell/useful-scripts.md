@@ -128,5 +128,5 @@ Write-Host ""
 ```
 
 {{< hint info >}}
-Remember to add it's location to path.
+Remember to add the script's location to Path.
 {{< /hint >}}
