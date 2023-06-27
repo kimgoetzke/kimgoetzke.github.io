@@ -6,12 +6,10 @@ series: [ "Powershell" ]
 tags: [Windows, Terminal, PowerShell]
 toc: true
 ---
-## Key resources
-
-- [Windows Terminal documentation](https://learn.microsoft.com/en-us/windows/terminal/install)
 
 ## Remember
 
+- [Windows Terminal documentation](https://learn.microsoft.com/en-us/windows/terminal/install)
 - Use `CTRL` + `Space` to show "MenuComplete" i.e. available options based on the input provided so far
 - Use `Arrow key (right)` for basic auto-complete
 - Set up advanced auto-complete - see [this article](https://techcommunity.microsoft.com/t5/itops-talk-blog/autocomplete-in-powershell/ba-p/2604524)
@@ -27,6 +25,11 @@ toc: true
 ## Basic Terminal commands
 
 ### Check version of PowerShell
+```powershell
+(Get-PSReadlineOption).HistorySavePath
+```
+
+### Find your PowerShell command history
 ```powershell
 $PSVersionTable
 ```
@@ -57,6 +60,16 @@ wsl --distribution [distro_name]
 wget [URL + file_name]
 Expand-Archive ./filetounzip.zip ./folder-to-extract-to
 ```
+
+### Copying files
+```powershell
+xcopy "some_folder\subfolder\" "another_folder\subfolder\" /E /K /D /H /Y
+```
+
+{{< hint link >}}
+`/E` copies all subdirectories, even if they are empty. `/K` retains the read-only attribute on destination files if present on the source files. `/D` without `[:MM-DD-YYYY]` copies all _source_ files that are newer than existing _destination_ files. `/H` copies files with hidden and system file attributes. And `/Y` suppresses the prompt to confirm overwriting.
+Checkout the [xcopy documentation on learn.microsoft.com](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/xcopy) for more info.
+{{< /hint >}}
 
 ### Find directory of a process
 ```powershell
