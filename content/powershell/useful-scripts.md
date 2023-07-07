@@ -11,6 +11,9 @@ toc: false
 ```powershell
 #! /usr/bin/pwsh
 
+# Note: Named parameters require '-' but...
+# param ($f1, $f2)
+# ...unnamed parameters do not require '-'
 $f1=$args[0]
 $f2=$args[1]
 
@@ -88,6 +91,40 @@ function StopAndRemoveAllDockerContainers {
     docker stop $(docker ps -a -q) && docker container prune -f
 }
 
+function GenerateUuid {
+    Write-Host "Action: "$function" - generates random UUID."
+    $uuid=[guid]::NewGuid().ToString()
+    Set-Clipboard -Value $uuid
+    Write-Host "UUID ($uuid) copied to clipboard."
+}
+
+function GenerateUlid {
+    Write-Host "Action: "$function" - generates random ULID."
+    $ulid_encoding = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+    $ulid_encoding_length = $ulid_encoding.Length
+    $time_now = [UInt64]((([datetime]::UtcNow).Ticks - 621355968000000000) / 10000)
+    $created_string = ''
+    for ($i = 10; $i -gt 0; $i--)
+    {
+        $Mod = [int]($time_now % $ulid_encoding_length)
+        $created_string = $ulid_encoding[$Mod] + $created_string
+        $time_now = ($time_now - $Mod) / $ulid_encoding_length
+    }
+    $timestamp_component = $created_string
+    $created_string = ''
+    $random = [random]::new()
+    for ($i = 16; $i -gt 0; $i--)
+    {
+        $random_index = [int]([math]::Floor($ulid_encoding_length * $random.NextDouble()))
+        $created_string = $ulid_encoding[$random_index] + $created_string
+        Start-Sleep -Milliseconds 1
+    }
+    $random_component = $created_string
+    $ulid = $timestamp_component + $random_component
+    Set-Clipboard -Value $ulid
+    Write-Host "ULID ($ulid) copied to clipboard."
+}
+
 function Help {
     Write-Host "Action: "$function" - lists available commands."
     Write-Host "mp     : Copy Mysql Docker container port number to clipboard"
@@ -97,6 +134,8 @@ function Help {
     Write-Host "drcv   : Remove unused Docker containers and volumes"
     Write-Host "drv    : Remove unused Docker volumes"
     Write-Host "dsrc   : Stop and remove all Docker containers"
+    Write-Host "uuid   : Generate a random UUID"
+    Write-Host "ulid   : Generate a random ULID"
     Write-Host "?      : Show this list of parameters"
 }
 
@@ -110,6 +149,8 @@ function ExecuteParameter($function) {
         {$_ -eq "drcv" -or $_ -eq "drmcv"} { RemoveUnusedDockerContainersAndVolumes }
         {$_ -eq "drv" -or $_ -eq "drmv"} { RemoveUnusedDockerVolumes }
         {$_ -eq "dsrc"} { StopAndRemoveAllDockerContainers }
+        {$_ -eq "uuid"} { GenerateUuid }
+        {$_ -eq "ulid"} { GenerateUlid }
         {$_ -eq "?" -or $_ -eq "help"} { Help }
         default { Write-Host "Error: Invalid parameter. No action taken."; break }
     }
