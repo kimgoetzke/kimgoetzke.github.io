@@ -11,9 +11,8 @@ toc: false
 ```powershell
 #! /usr/bin/pwsh
 
-# Note: Named parameters require '-' but...
+# TODO: Consider using named parameters which require '-':
 # param ($f1, $f2)
-# ...unnamed parameters do not require '-'
 $f1=$args[0]
 $f2=$args[1]
 
@@ -48,8 +47,7 @@ function GetPortInfo {
         $activePortPattern = ":$port\s.+LISTENING\s+\d+$"
         $pidNumberPattern = "\d+$"
 
-        if ($foundProcesses | Select-String -Pattern $activePortPattern -Quiet) 
-        {
+        if ($foundProcesses | Select-String -Pattern $activePortPattern -Quiet) {
             $matched = $foundProcesses | Select-String -Pattern $activePortPattern
             $firstMatch = $matched.Matches.Get(0).Value
             $pidNumber = [regex]::match($firstMatch, $pidNumberPattern).Value
@@ -104,8 +102,7 @@ function GenerateUlid {
     $ulid_encoding_length = $ulid_encoding.Length
     $time_now = [UInt64]((([datetime]::UtcNow).Ticks - 621355968000000000) / 10000)
     $created_string = ''
-    for ($i = 10; $i -gt 0; $i--)
-    {
+    for ($i = 10; $i -gt 0; $i--) {
         $Mod = [int]($time_now % $ulid_encoding_length)
         $created_string = $ulid_encoding[$Mod] + $created_string
         $time_now = ($time_now - $Mod) / $ulid_encoding_length
@@ -113,8 +110,7 @@ function GenerateUlid {
     $timestamp_component = $created_string
     $created_string = ''
     $random = [random]::new()
-    for ($i = 16; $i -gt 0; $i--)
-    {
+    for ($i = 16; $i -gt 0; $i--) {
         $random_index = [int]([math]::Floor($ulid_encoding_length * $random.NextDouble()))
         $created_string = $ulid_encoding[$random_index] + $created_string
         Start-Sleep -Milliseconds 1
@@ -123,6 +119,49 @@ function GenerateUlid {
     $ulid = $timestamp_component + $random_component
     Set-Clipboard -Value $ulid
     Write-Host "ULID ($ulid) copied to clipboard."
+}
+
+function GenerateUlidSilently {
+    $ulid_encoding = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+    $ulid_encoding_length = $ulid_encoding.Length
+    $time_now = [UInt64]((([datetime]::UtcNow).Ticks - 621355968000000000) / 10000)
+    $created_string = ''
+    for ($i = 10; $i -gt 0; $i--) {
+        $Mod = [int]($time_now % $ulid_encoding_length)
+        $created_string = $ulid_encoding[$Mod] + $created_string
+        $time_now = ($time_now - $Mod) / $ulid_encoding_length
+    }
+    $timestamp_component = $created_string
+    $created_string = ''
+    $random = [random]::new()
+    for ($i = 16; $i -gt 0; $i--) {
+        $random_index = [int]([math]::Floor($ulid_encoding_length * $random.NextDouble()))
+        $created_string = $ulid_encoding[$random_index] + $created_string
+        Start-Sleep -Milliseconds 1
+    }
+    $random_component = $created_string
+    $ulid = $timestamp_component + $random_component
+    Set-Clipboard -Value $ulid
+}
+
+function ToggleGradleInitFile {
+    Write-Host "Action: "$function" - renames init.gradle file to activate/deactivate it."
+    $gradleFolder = Join-Path -Path $env:USERPROFILE -ChildPath ".gradle"
+    $initFile = Join-Path -Path $gradleFolder -ChildPath "init.gradle"
+    $inactiveInitFile = Join-Path -Path $gradleFolder -ChildPath "INACTIVE_init.gradle_INACTIVE"
+
+    if (Test-Path -Path $initFile -PathType Leaf) {
+        Rename-Item -Path $initFile -NewName "INACTIVE_init.gradle_INACTIVE" -Force
+        Write-Host "Outcome: Deactivated i.e. renamed init.gradle to INACTIVE_init.gradle_INACTIVE"
+    }
+    # Check if the INACTIVE_init.gradle_INACTIVE file exists
+    elseif (Test-Path -Path $inactiveInitFile -PathType Leaf) {
+        Rename-Item -Path $inactiveInitFile -NewName "init.gradle" -Force
+        Write-Host "Outcome: Activated i.e. renamed INACTIVE_init.gradle_INACTIVE to init.gradle"
+    }
+    else {
+        Write-Host "Error: No init.gradle or INACTIVE_init.gradle_INACTIVE file found."
+    }
 }
 
 function Help {
@@ -136,6 +175,8 @@ function Help {
     Write-Host "dsrc   : Stop and remove all Docker containers"
     Write-Host "uuid   : Generate a random UUID"
     Write-Host "ulid   : Generate a random ULID"
+    Write-Host "ulids  : Generate a random ULID silently i.e only copy to clipboard"
+    Write-Host "ginit  : Set Gradle init file to active or inactive"
     Write-Host "?      : Show this list of parameters"
 }
 
@@ -151,6 +192,8 @@ function ExecuteParameter($function) {
         {$_ -eq "dsrc"} { StopAndRemoveAllDockerContainers }
         {$_ -eq "uuid"} { GenerateUuid }
         {$_ -eq "ulid"} { GenerateUlid }
+        {$_ -eq "ulids"} { GenerateUlidSilently }
+        {$_ -eq "ginit"} { ToggleGradleInitFile }
         {$_ -eq "?" -or $_ -eq "help"} { Help }
         default { Write-Host "Error: Invalid parameter. No action taken."; break }
     }
