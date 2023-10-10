@@ -130,10 +130,20 @@ Reload/refresh profile:
 .$profile
 ```
 
-## Useful scripts/snippents
+## Useful scripts/snippets
+
+### Split command output and print line by line
+```powershell
+# Maven dependencies classpath example
+& ./mvnw dependency:build-classpath | ForEach-Object { $_ -split ';' }
+```
+
+{{< hint link >}}
+`&` sends the output of the first command as input to the next part of the one-liner.
+{{< /hint >}}
+
 
 ### Switch between different Java versions
-
 1. Create the folder `C:\Program Files\Java\scripts`
 2. Paste the following scripts (and/or new scripts for other Java versions)
 
