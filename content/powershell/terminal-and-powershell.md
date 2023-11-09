@@ -34,6 +34,11 @@ toc: true
 $PSVersionTable
 ```
 
+### `cat`/get/display content of file
+```powershell
+gc [file_name]
+```
+
 ### Use WSL
 List all distros:
 ```powershell 
@@ -123,6 +128,17 @@ Add variable to profile:
 ```powershell
 # Paste variable you want to set into your profile like this:
 Set-Variable -Name "LOCAL_POSTGRES_PASSWORD" -Value "password" -Scope global 
+```
+
+Set "aliases" for folders:
+```powershell
+# Allows changing folder with 'f user'
+function f {
+    switch ($args[0]) {
+        {$_ -eq "user" -or $_ -eq "u"} { Set-Location -Path 'C:\Users\' }
+        default { Write-Host "Error: Folder not recognised." }
+    }
+}
 ```
 
 Reload/refresh profile:
