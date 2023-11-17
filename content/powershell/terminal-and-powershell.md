@@ -22,7 +22,7 @@ toc: true
 3. Append any customisations to the above target, e.g. ` -p "PowerShell 7 (x86)" ; split-pane -H -p "Ubuntu"` to open with two horizontal panes with Powershell and Bash
 4. Add a keyboard shortcut and/or select `Open as Administrator` if you want
 
-## Basic Terminal commands
+## Basic commands
 
 ### Check version of PowerShell
 ```powershell
@@ -147,6 +147,18 @@ Reload/refresh profile:
 ```
 
 ## Useful scripts/snippets
+
+### The grep equivalent / Select-String
+
+Example for processing a single file and storing output in new file
+```powershell
+Get-Content -Path SomeFile.log | Select-String -Pattern "`"500`"" | Out-File -FilePath 500.log
+```
+
+Example for processsing multiple files and storing output in new file
+```powershell
+Get-ChildItem -Filter *.log | ForEach-Object { Select-String -Path $_.FullName -Pattern "`"500`"" } | Out-File -FilePath 500.log
+```
 
 ### Split command output and print line by line
 ```powershell
