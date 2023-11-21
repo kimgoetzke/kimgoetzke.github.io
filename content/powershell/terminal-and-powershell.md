@@ -130,6 +130,12 @@ Add variable to profile:
 Set-Variable -Name "LOCAL_POSTGRES_PASSWORD" -Value "password" -Scope global 
 ```
 
+Add simple alias for an application:
+```powershell
+Set-Alias -Name idea -Value 'C:\...\IntelliJ IDEA Ultimate\bin\idea64.exe'
+Set-Alias -Name webstorm -Value 'C:\...\WebStorm\bin\webstorm64.exe'
+```
+
 Set "aliases" for folders:
 ```powershell
 # Allows changing folder with 'f user'
