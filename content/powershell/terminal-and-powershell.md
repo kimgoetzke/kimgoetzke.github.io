@@ -132,24 +132,60 @@ Set-Variable -Name "LOCAL_POSTGRES_PASSWORD" -Value "password" -Scope global
 
 Add simple alias for an application:
 ```powershell
-Set-Alias -Name idea -Value 'C:\...\IntelliJ IDEA Ultimate\bin\idea64.exe'
-Set-Alias -Name webstorm -Value 'C:\...\WebStorm\bin\webstorm64.exe'
+Set-Alias -Name idea -Value 'C:\{...}\IntelliJ IDEA Ultimate\bin\idea64.exe'
+Set-Alias -Name webstorm -Value 'C:\{...}\WebStorm\bin\webstorm64.exe'
+```
+
+Add alias with args for an application:
+```powershell
+# Example with Visual VM and Zulu 17 JDK, allowing for additional args
+function Start-VisualVM {
+    & 'C:\Program Files\visualvm_217\bin\visualvm.exe' --jdkhome "C:\Program Files\Zulu\zulu-17" --userdir "C:\Users\{...}\visualvm_userdir" $args
+}
+Set-Alias -Name visualvm -Value Start-VisualVM
 ```
 
 Set "aliases" for folders:
 ```powershell
-# Allows changing folder with 'f user'
-function f {
+# Allows changing folder e.g. 'fo user'
+function fo {
     switch ($args[0]) {
-        {$_ -eq "user" -or $_ -eq "u"} { Set-Location -Path 'C:\Users\' }
-        default { Write-Host "Error: Folder not recognised." }
+        {$_ -eq "user" -or $_ -eq "home"} { Set-Location -Path 'C:\Users\{...}' }
+        {$_ -eq "ssh"} { Set-Location -Path 'C:\Users\{...}\.ssh' } 
+        {$_ -eq "aws"} { Set-Location -Path 'C:\Users\{...}\.aws' } 
+        {$_ -eq "pro"} { Set-Location -Path 'C:\Users\{...}\projects' }
+        default {
+            Write-Host "Error: Folder not recognised."
+            Write-Host "Recognised folders are user/home, ssh, aws, pro."
+      }
     }
 }
 ```
 
-Reload/refresh profile:
+Set "aliases" for files:
+```powershell
+# Allows opening files in VS Code e.g. 'fi ssh'
+function fi {
+    switch ($args[0]) {
+        {$_ -eq "ssh"} { code 'C:\Users\{...}\.ssh\config' } 
+        {$_ -eq "aws"} { code 'C:\Users\{...}\.aws\config' } 
+        default { 
+            Write-Host "Error: File not recognised." 
+            Write-Host "Recognised files are ssh, aws."
+        }
+    }
+}
+```
+
+Other, random things:
 ```powershell
 .$profile
+```
+
+Reload/refresh profile:
+```powershell
+Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete # Enables auto-complete
+$env:POWERSHELL_UPDATECHECK = 'Off' # Disables update banner in Terminal startup
 ```
 
 ## Useful scripts/snippets
