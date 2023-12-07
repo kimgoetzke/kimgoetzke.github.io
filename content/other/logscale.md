@@ -7,6 +7,16 @@ tags: [ "LogScale", "Logs" ]
 toc: true
 ---
 
+## Converting timestamps to date
+
+```regexp
+date := formatTime("%Y-%m-%d", field=@timestamp, locale=en_UK, timezone="GMT")
+| groupBy([date])
+| sort(field=date, order=desc)
+```
+- Displays the timestamp as `YYYY-MM-DD`
+- Counts logs and sorts them in descending order by newly created `date` 
+
 ## Truncating fields
 
 ```regexp
