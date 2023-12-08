@@ -7,7 +7,18 @@ tags: [ "LogScale", "Logs" ]
 toc: true
 ---
 
-## Converting timestamps to date
+## Converting timestamps to hh:ss
+
+```regexp
+natural_message=/PROCESSING REQUEST method=.*/
+| Time := format("%tH:%tM",field=[@timestamp,@timestamp])
+| groupBy([Time], function=count(as="Number of Requests"))
+| sort(field=Time, order=asc)
+```
+- Displays the timestamp as `hh:ss` e.g. `08:29` in a new field called `Time`
+- Counts all logs with a matching `natural_message` and groups them by `Time` in ascending order
+
+## Converting timestamps to dates
 
 ```regexp
 date := formatTime("%Y-%m-%d", field=@timestamp, locale=en_UK, timezone="GMT")
@@ -62,3 +73,11 @@ format("%s@%s", field=[application, applicationVersion], as=Application)
 ```regexp
 sort("price", order=desc) 
 ```
+
+## Using parameters
+
+```regex
+environment=?environment
+| application=?application
+```
+- Allows setting `application` and `environment` in top bar (dashboards and individual searches)
