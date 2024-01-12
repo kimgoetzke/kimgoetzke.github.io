@@ -3,11 +3,12 @@ title: Useful scripts
 date: 2023-05-23
 draft: false
 series: [ "Powershell" ]
-tags: [Windows, Terminal, PowerShell, Scripts]
+tags: [ Windows, Terminal, PowerShell, Scripts ]
 toc: false
 ---
 
 ## Useful little helper script
+
 ```powershell
 #! /usr/bin/pwsh
 
@@ -28,11 +29,25 @@ function GetMysqlDockerContainerPortNumber {
     }
 }
 
+function SwitchTo-Java11 {
+    Write-Host "Action: "$function" - switches to specified Java version."
+    $Env:JAVA_HOME="{Add path to Java 11 here}" 
+    $Env:Path="$Env:JAVA_HOME\bin;$Env:Path" 
+    Write-Host "Java 11 activated."
+}
+
 function SwitchTo-Java17 {
     Write-Host "Action: "$function" - switches to specified Java version."
-    $Env:JAVA_HOME="C:\Program Files\Zulu\zulu-17\" 
+    $Env:JAVA_HOME="{Add path to Java 17 here}" 
     $Env:Path="$Env:JAVA_HOME\bin;$Env:Path" 
-    Write-Host "Java Zulu 17 activated."
+    Write-Host "Java 17 activated."
+}
+
+function SwitchTo-Java21 {
+    Write-Host "Action: "$function" - switches to specified Java version."
+    $Env:JAVA_HOME="{Add path to Java 21 here}" 
+    $Env:Path="$Env:JAVA_HOME\bin;$Env:Path" 
+    Write-Host "Java 21 activated."
 }
 
 function GetPortInfo {
@@ -167,7 +182,9 @@ function ToggleGradleInitFile {
 function Help {
     Write-Host "Action: "$function" - lists available commands."
     Write-Host "mp     : Copy Mysql Docker container port number to clipboard"
+    Write-Host "j11    : Switch to Java Zulu 11"
     Write-Host "j17    : Switch to Java Zulu 17"
+    Write-Host "j21    : Switch to Java Zulu 21"
     Write-Host "gp     : Get TCP connections (for port specified)"
     Write-Host "pr     : Get process information for a given PID"
     Write-Host "drcv   : Remove unused Docker containers and volumes"
@@ -184,7 +201,9 @@ function ExecuteParameter($function) {
     Write-Host ""
     switch ($function) {
         {$_ -eq "mp" -or $_ -eq "mysql" -or $_ -eq "mysql-port"} { GetMysqlDockerContainerPortNumber }
+        {$_ -eq "j11" -or $_ -eq "java11"} { SwitchTo-Java11 }
         {$_ -eq "j17" -or $_ -eq "java17"} { SwitchTo-Java17 }
+        {$_ -eq "j21" -or $_ -eq "java21"} { SwitchTo-Java21 }
         {$_ -eq "gp"} { GetPortInfo }
         {$_ -eq "pr"} { GetProcessInfo }
         {$_ -eq "drcv" -or $_ -eq "drmcv"} { RemoveUnusedDockerContainersAndVolumes }
@@ -212,5 +231,7 @@ Write-Host ""
 ```
 
 {{< hint info >}}
-Remember to add the script's location to Path.
+Save this script with any name (e.g. your name) and the `.ps1` extension. Add the script's location to `PATH` in your
+environment variables. Remember to update any locations used in the script (e.g. for switching Java versions). Then run
+the script with e.g. `kim ?` to display the available commands.
 {{< /hint >}}
