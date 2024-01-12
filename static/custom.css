@@ -1,3 +1,22 @@
+/* Homepage: Start */
+
+#particles-js {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+canvas {
+    display: block;
+    vertical-align: bottom;
+}
+
+.homepage-button .hover {
+    cursor: pointer;
+    background-color: hsl(0, 83%, 35%);
+}
+
+/* Homepage: End */
 /* Custom table of contents: Start */
 
 .toc-menu {
@@ -92,11 +111,11 @@ nav a.active {
     display: none;
 }
 
-input[type="radio"][value="custom"]:checked+label+.custom-tabs-content {
+input[type="radio"][value="custom"]:checked + label + .custom-tabs-content {
     display: block;
 }
 
-input[type="radio"][value="custom"]:checked+label {
+input[type="radio"][value="custom"]:checked + label {
     background-color: hsl(0, 0%, 48%);
 }
 
@@ -114,7 +133,6 @@ pre code {
     overflow-x: auto;
     white-space: pre-wrap;
     white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
     white-space: -o-pre-wrap;
     word-wrap: break-word;
 }
