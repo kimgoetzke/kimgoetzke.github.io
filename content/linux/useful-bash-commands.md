@@ -25,7 +25,7 @@ rm # Remove file/directory (add -r to delete everything inside it i.e. recursive
 ```
 
 {{< hint info >}}
-Get `ranger` (console file manager) to improve the entire navigation experience. When using `ranger`, you can use `Shift` + `S` to navigate to the current directory. Type `exit` after that to close the instance and return to ranger. Use `Shift` + `Q` to quit ranger.
+Get `ranger` (console file manager) to improve the entire navigation experience. When using `ranger`, you can use `Shift` + `S` to navigate to the current directory. Type `exit` after that to close the instance and return to ranger. Use `Shift` + `Q` to quit ranger. Consider adding `alias r='. ranger'` to your `.bashrc` file which will allow you to use `ranger` with `r` and let the shell follow ranger so that when exiting with `l`, the current folder in `ranger` is selected opened in your shell.
 {{< /hint >}}
 
 ### Refresh/reload profile
