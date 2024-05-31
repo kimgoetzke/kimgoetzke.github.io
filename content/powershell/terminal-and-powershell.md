@@ -114,10 +114,17 @@ Get variable:
 Get-Variable -Name "VARIABLE_NAME"
 ```
 
+Set global environment variable:
+
+```powershell
+setx VARIABLE_NAME "some_value"
+```
+
 Set variable:
+
 {{< hint warning >}}
 The below won't set the variable permanently. If you want to retain the variable beyond the current session, consider
-adding it to your profile.
+adding it to your profile or with the above method.
 {{< /hint >}}
 
 ```powershell
