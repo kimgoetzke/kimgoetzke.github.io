@@ -13,27 +13,52 @@ toc: false
 #! /usr/bin/pwsh
 
 # TODO: Consider using named parameters which require '-':
-# param ($f1, $f2)
-$f1=$args[0]
-$f2=$args[1]
+# param ($f, $arg)
+$f=$args[0]
+$arg=$args[1]
 
 function GetMysqlDockerContainerPortNumber {
-    Write-Host "Action: "$function" - copies Mysql Docker container port number to clipboard."
+    Write-Host "Action: "$function" - copies MySQL Docker container port number to clipboard."
     $sql_docker_container=$(docker ps | Select-String -Pattern "mysql:")
     if ($null -eq $sql_docker_container) {
-        Write-Host "Port number not found. Check if Mysql container is running."
+        Write-Host "Port number not found. Check if MySQL container is running."
     } else {
         $port_number=$sql_docker_container -replace '.*:(\d+).*', '$1' | ForEach-Object { $_.Trim() }
         Set-Clipboard -Value $port_number
-        Write-Host "Mysql port number ($port_number) copied to clipboard."
+        Write-Host "MySQL port number ($port_number) copied to clipboard."
     }
 }
 
-function SwitchTo-Java11 {
-    Write-Host "Action: "$function" - switches to specified Java version."
-    $Env:JAVA_HOME="{Add path to Java 11 here}" 
-    $Env:Path="$Env:JAVA_HOME\bin;$Env:Path" 
-    Write-Host "Java 11 activated."
+function GetMysqlDockerContainerId {
+    Write-Host "Action: "$function" - Sets the MySQL Docker container id as a variable."
+    $sql_container_name=$(docker ps | Select-String -Pattern "mysql:")
+    if ($null -eq $sql_container_name) {
+        Write-Host "Container not found. Check if MySQL container is running."
+    } else {
+        $containerName = $sql_container_name.Line.Split(" ")[0]
+        Set-Clipboard -Value $containerName
+        Set-Variable -Name cn -Value $containerName
+        Write-Host "MySQL container name ($containerName) copied to clipboard and set as `$cn."
+    }
+}
+
+function ExecuteCommandInMySqlContainer {
+    Write-Host "Action: "$function" - Executes a MySQL command in a Docker container e.g. container_name::SHOW DATABASES."
+    $parts = $arg -split "::"
+    if ($parts.Count -gt 2) {
+        Write-Host "Warning: More than two parts (separated by '::') detected. Only part 1 (container name) and 2 (command) will be used."
+    }
+    if ($parts.Count -lt 2) {
+        Write-Host "Warning: You've not provided enough query parts (separated by '::'). Trying to fetch container name for you..."
+        GetMysqlDockerContainerId
+        Write-Host "Looking for container with name '$containerName' to execute command: '$arg;'."
+        docker exec -it $(docker ps -f "name=$containerName" --format "{{.ID}}") bash -c "mysql -u test -ptest -e `"$arg;`""
+        return
+    }
+    $containerName = $parts[0]
+    $command = $parts[1]
+    Write-Host "Looking for container with name $containerName to execute command: $command."
+    docker exec -it $(docker ps -f "name=$containerName" --format "{{.ID}}") bash -c "mysql -u test -ptest -e `"$command;`""
 }
 
 function SwitchTo-Java17 {
@@ -102,6 +127,18 @@ function RemoveUnusedDockerVolumes {
 function StopAndRemoveAllDockerContainers {
     Write-Host "Action: "$function" - stops and removes all Docker containers."
     docker stop $(docker ps -a -q) && docker container prune -f
+}
+
+function SwitchTo-Java21 {
+    Write-Host "Action: "$function" - switches to specified Java version."
+    $Env:JAVA_HOME="{Add path to Java 21 here}" 
+    $Env:Path="$Env:JAVA_HOME\bin;$Env:Path" 
+    Write-Host "Java 21 activated."
+}
+
+function StopAndRemoveUnusedDockerContainersAndVolumes {
+    Write-Host "Action: "$function" - stops and removes all Docker containers and removes all unused Docker volumes."
+    docker stop $(docker ps -a -q) && docker container prune -f && docker volume prune -f
 }
 
 function GenerateUuid {
@@ -179,51 +216,78 @@ function ToggleGradleInitFile {
     }
 }
 
+function FixPackageJsonPortsNames {
+    Write-Host "Action: "$function" - Recursively searches through work FE repo for package.json files and replaces all occurrences of '-p `${PORT:=3000}' with '-p 3000'."
+    Write-Host "Fetching files..."
+    $files = Get-ChildItem -Path "C:\path\to\repo" -Filter 'package.json' -Recurse -File
+    foreach ($file in $files) {
+        if ($file.DirectoryName -notmatch '\\node_modules\\' -and $file.DirectoryName -notmatch '\\prisma\\' -and $file.DirectoryName -notmatch '\\db\\' -and $file.DirectoryName -notmatch '\\jest\\' -and $file.DirectoryName -notmatch '\\.next\\') {
+            Write-Host "Processing file: $file..."
+            $content = [System.IO.File]::ReadAllText($file)
+            $newContent = $content.Replace("-p `${PORT:=3000}","-p 3000")
+            if ($content -ne $newContent) {
+                [System.IO.File]::WriteAllText($file, $newContent)
+                Write-Host "Modified: $file."
+            }
+        }
+    }
+    Write-Host "Done!"
+}
+
 function Help {
     Write-Host "Action: "$function" - lists available commands."
-    Write-Host "mp     : Copy Mysql Docker container port number to clipboard"
-    Write-Host "j11    : Switch to Java Zulu 11"
-    Write-Host "j17    : Switch to Java Zulu 17"
-    Write-Host "j21    : Switch to Java Zulu 21"
+    Write-Host "mp     : Copy MySQL Docker container port number to clipboard"
+    Write-Host "mid    : Set MySQL Docker container id as variable"
+    Write-Host "mc     : Executes a MySQL command in a Docker container e.g. container_id::SHOW DATABASES"
+    Write-Host "j17    : Switch to Java 17"
+    Write-Host "j21    : Switch to Java 21"
     Write-Host "gp     : Get TCP connections (for port specified)"
     Write-Host "pr     : Get process information for a given PID"
     Write-Host "drcv   : Remove unused Docker containers and volumes"
     Write-Host "drv    : Remove unused Docker volumes"
     Write-Host "dsrc   : Stop and remove all Docker containers"
+    Write-Host "dsrcv  : Stop and remove all Docker containers and volumes"
     Write-Host "uuid   : Generate a random UUID"
     Write-Host "ulid   : Generate a random ULID"
     Write-Host "ulids  : Generate a random ULID silently i.e only copy to clipboard"
     Write-Host "ginit  : Set Gradle init file to active or inactive"
+    Write-Host "fixfe  : Recursively searches for package.json files in work FE repo and makes ports Powershell syntax compatible"
     Write-Host "?      : Show this list of parameters"
 }
 
-function ExecuteParameter($function) {
-    Write-Host ""
+function ExecuteParameter($function, $arg) {
+    if ($null -ne $arg) {
+        Write-Host "Argument: "$arg
+    }
     switch ($function) {
         {$_ -eq "mp" -or $_ -eq "mysql" -or $_ -eq "mysql-port"} { GetMysqlDockerContainerPortNumber }
-        {$_ -eq "j11" -or $_ -eq "java11"} { SwitchTo-Java11 }
+        {$_ -eq "mid" } { GetMysqlDockerContainerId }
+        {$_ -eq "mc" } { ExecuteCommandInMySqlContainer($arg) }
         {$_ -eq "j17" -or $_ -eq "java17"} { SwitchTo-Java17 }
-        {$_ -eq "j21" -or $_ -eq "java21"} { SwitchTo-Java21 }
+        {$_ -eq "j19" -or $_ -eq "java19"} { SwitchTo-Java19 }
         {$_ -eq "gp"} { GetPortInfo }
         {$_ -eq "pr"} { GetProcessInfo }
         {$_ -eq "drcv" -or $_ -eq "drmcv"} { RemoveUnusedDockerContainersAndVolumes }
         {$_ -eq "drv" -or $_ -eq "drmv"} { RemoveUnusedDockerVolumes }
         {$_ -eq "dsrc"} { StopAndRemoveAllDockerContainers }
+        {$_ -eq "dsrcv"} { StopAndRemoveUnusedDockerContainersAndVolumes }
         {$_ -eq "uuid"} { GenerateUuid }
         {$_ -eq "ulid"} { GenerateUlid }
         {$_ -eq "ulids"} { GenerateUlidSilently }
         {$_ -eq "ginit"} { ToggleGradleInitFile }
+        {$_ -eq "fixfe"} { FixPackageJsonPortsNames }
         {$_ -eq "?" -or $_ -eq "help"} { Help }
         default { Write-Host "Error: Invalid parameter. No action taken."; break }
     }
 }
 
-if ($null -eq $f1) {
+if ($null -eq $f) {
     Write-Host "Need to provide one or two parameter(s). No action taken."
 } else {
-    ExecuteParameter $f1
-    if ($null -ne $f2) {
-        ExecuteParameter $f2
+    if ($null -ne $arg) {
+        ExecuteParameter $f $arg
+    } else {
+        ExecuteParameter $f
     }
 }
 
