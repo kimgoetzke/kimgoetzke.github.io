@@ -7,15 +7,57 @@ tags: [ Windows, Terminal, PowerShell, Scripts ]
 toc: false
 ---
 
-## Useful little helper script
+## Little helper script
 
 ```powershell
 #! /usr/bin/pwsh
 
 # TODO: Consider using named parameters which require '-':
-# param ($f, $arg)
+# param ($f1, $f2)
 $f=$args[0]
 $arg=$args[1]
+
+function RemoveUnusedDockerContainersAndVolumes {
+    Write-Host "Action: "$function" - removes all unused Docker containers & volumes."
+    docker container prune -f && docker volume prune -f
+}
+
+function RemoveUnusedDockerVolumes {
+    Write-Host "Action: "$function" - removes all unused Docker volumes."
+    docker volume prune -f
+}
+
+function StopAndRemoveAllDockerContainers {
+    Write-Host "Action: "$function" - stops and removes all Docker containers."
+    docker stop $(docker ps -a -q) && docker container prune -f
+}
+
+function StopAndRemoveUnusedDockerContainersAndVolumes {
+    Write-Host "Action: "$function" - stops and removes all Docker containers and removes all unused Docker volumes."
+    docker stop $(docker ps -a -q) && docker container prune -f && docker volume prune -f
+}
+
+function SpinUpNewMysqlDockerContainer {
+    Write-Host "Action: "$function" - spins up new MySQL Docker container and copies env vars to clipboard."
+    $currentContainer = docker ps -f "name=local_mysql" --format "{{.ID}}"
+    if ($null -eq $currentContainer) {
+        Write-Host "No MySQL container found. Spinning up new container..."
+    } else {
+        Write-Host "MySQL container found. Stopping and removing container..."
+        docker stop $currentContainer && docker container prune -f
+        Start-Sleep -Seconds 2
+    }
+    docker run --name=local_mysql --env=MYSQL_DATABASE=test --env=MYSQL_PASSWORD=test --env=MYSQL_USER=test --env=MYSQL_ROOT_PASSWORD=test -p 3306 -d mysql:8.0 --character-set-server=latin1 --collation_server=latin1_swedish_ci --log-bin-trust-function-creators=1
+    Start-Sleep -Seconds 1
+    $mysqlPortOutput = docker port local_mysql
+    $mysqlPort = $mysqlPortOutput.Split(":")[-1]
+    Write-Host "MySQL container accessible on port: "$mysqlPort
+    $testEnvVars = "MYSQL_URL=jdbc:mysql://localhost:$($mysqlPort)/test;MYSQL_USERNAME=root;MYSQL_PASSWORD=test" # Change accordingly
+    Set-Clipboard -Value $testEnvVars
+    Write-Host "Copied to clipboard: $($testEnvVars)."
+    Write-Host "Open the run configuration for any test and paste as environment vars."
+    Write-Host "In case of errors above, clean up with: 'docker stop `$(docker ps -f `"name=local_mysql`" --format `"{{.ID}}`") && docker container prune -f'."
+}
 
 function GetMysqlDockerContainerPortNumber {
     Write-Host "Action: "$function" - copies MySQL Docker container port number to clipboard."
@@ -35,10 +77,10 @@ function GetMysqlDockerContainerId {
     if ($null -eq $sql_container_name) {
         Write-Host "Container not found. Check if MySQL container is running."
     } else {
-        $containerName = $sql_container_name.Line.Split(" ")[0]
-        Set-Clipboard -Value $containerName
-        Set-Variable -Name cn -Value $containerName
-        Write-Host "MySQL container name ($containerName) copied to clipboard and set as `$cn."
+        $containerId = $sql_container_name.Line.Split(" ")[0]
+        Set-Clipboard -Value $containerId
+        Set-Variable -Name cn -Value $containerId
+        Write-Host "MySQL container id ($containerId) copied to clipboard and set as `$cn."
     }
 }
 
@@ -46,7 +88,7 @@ function ExecuteCommandInMySqlContainer {
     Write-Host "Action: "$function" - Executes a MySQL command in a Docker container e.g. container_name::SHOW DATABASES."
     $parts = $arg -split "::"
     if ($parts.Count -gt 2) {
-        Write-Host "Warning: More than two parts (separated by '::') detected. Only part 1 (container name) and 2 (command) will be used."
+        Write-Host "Warning: More than two parts (separated by '::') detected. Only part 1 (as container name) and 2 (as command) will be used."
     }
     if ($parts.Count -lt 2) {
         Write-Host "Warning: You've not provided enough query parts (separated by '::'). Trying to fetch container name for you..."
@@ -61,18 +103,27 @@ function ExecuteCommandInMySqlContainer {
     docker exec -it $(docker ps -f "name=$containerName" --format "{{.ID}}") bash -c "mysql -u test -ptest -e `"$command;`""
 }
 
-function SwitchTo-Java17 {
-    Write-Host "Action: "$function" - switches to specified Java version."
-    $Env:JAVA_HOME="{Add path to Java 17 here}" 
-    $Env:Path="$Env:JAVA_HOME\bin;$Env:Path" 
-    Write-Host "Java 17 activated."
-}
-
-function SwitchTo-Java21 {
-    Write-Host "Action: "$function" - switches to specified Java version."
-    $Env:JAVA_HOME="{Add path to Java 21 here}" 
-    $Env:Path="$Env:JAVA_HOME\bin;$Env:Path" 
-    Write-Host "Java 21 activated."
+function CopyInfraVariablesToClipboard {
+    Write-Host "Action: "$function" - Copies variables for running local infra with localstack and MySQL to clipboard."
+    $mysqlPortOutput = docker port local_mysql
+    $mysqlPort = 'ERROR'
+    if ($null -eq $mysqlPortOutput) {
+        Write-Host "Error: MySQL container not found. Check if MySQL container is running."
+    } else {
+        $mysqlPort = $mysqlPortOutput.Split(":")[-1]
+        Write-Host "MySQL is accessible on port: "$mysqlPort
+    }
+    $localstackPortOutput = docker port local-localstack-1
+    $localstackPort = 'ERROR'
+    if ($null -eq $localstackPortOutput) {
+        Write-Host "Error: Localstack container not found. Check if Localstack container is running."
+    } else {
+        $localstackPort = $localstackPortOutput.Split(":")[-1] 
+        Write-Host "Localstack is accessible on port: "$localstackPort
+    }
+    $testEnvVars = "LOCALSTACK=http://127.0.0.1:$($localstackPort);MYSQL_URL=jdbc:mysql://localhost:$($mysqlPort)/test;MYSQL_USERNAME=root;MYSQL_PASSWORD=test" # Change accordingly
+    Set-Clipboard -Value $testEnvVars
+    Write-Host "Copied to clipboard: $($testEnvVars)"
 }
 
 function GetPortInfo {
@@ -114,31 +165,61 @@ function GetProcessInfo {
     }
 }
 
-function RemoveUnusedDockerContainersAndVolumes {
-    Write-Host "Action: "$function" - removes all unused Docker containers & volumes."
-    docker container prune -f && docker volume prune -f
+function GenerateUlidSilently {
+    $ulid_encoding = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+    $ulid_encoding_length = $ulid_encoding.Length
+    $time_now = [UInt64]((([datetime]::UtcNow).Ticks - 621355968000000000) / 10000)
+    $created_string = ''
+    for ($i = 10; $i -gt 0; $i--) {
+        $Mod = [int]($time_now % $ulid_encoding_length)
+        $created_string = $ulid_encoding[$Mod] + $created_string
+        $time_now = ($time_now - $Mod) / $ulid_encoding_length
+    }
+    $timestamp_component = $created_string
+    $created_string = ''
+    $random = [random]::new()
+    for ($i = 16; $i -gt 0; $i--) {
+        $random_index = [int]([math]::Floor($ulid_encoding_length * $random.NextDouble()))
+        $created_string = $ulid_encoding[$random_index] + $created_string
+        Start-Sleep -Milliseconds 1
+    }
+    $random_component = $created_string
+    $ulid = $timestamp_component + $random_component
+    Set-Clipboard -Value $ulid
 }
 
-function RemoveUnusedDockerVolumes {
-    Write-Host "Action: "$function" - removes all unused Docker volumes."
-    docker volume prune -f
-}
-
-function StopAndRemoveAllDockerContainers {
-    Write-Host "Action: "$function" - stops and removes all Docker containers."
-    docker stop $(docker ps -a -q) && docker container prune -f
-}
-
-function SwitchTo-Java21 {
+function SwitchTo-Java17 {
     Write-Host "Action: "$function" - switches to specified Java version."
-    $Env:JAVA_HOME="{Add path to Java 21 here}" 
-    $Env:Path="$Env:JAVA_HOME\bin;$Env:Path" 
-    Write-Host "Java 21 activated."
+    $Env:JAVA_HOME="C:\Program Files (x86)\Eclipse Adoptium\jdk-17.0.11.9-hotspot" # Change accordingly
+    $Env:Path="$Env:JAVA_HOME\bin;$Env:Path"
+    Write-Host "Java Adoptium Temurin 17 activated."
 }
 
-function StopAndRemoveUnusedDockerContainersAndVolumes {
-    Write-Host "Action: "$function" - stops and removes all Docker containers and removes all unused Docker volumes."
-    docker stop $(docker ps -a -q) && docker container prune -f && docker volume prune -f
+function SwitchTo-Java19 {
+    Write-Host "Action: "$function" - switches to specified Java version."
+    $Env:JAVA_HOME="C:\Program Files (x86)\Eclipse Adoptium\jdk-19.0.2.7-hotspot\" # Change accordingly
+    $Env:Path="$Env:JAVA_HOME\bin;$Env:Path" 
+    Write-Host "Java Adoptium Temurin 19 activated."
+}
+
+function ToggleGradleInitFile {
+    Write-Host "Action: "$function" - renames init.gradle file to activate/deactivate it."
+    $gradleFolder = Join-Path -Path $env:USERPROFILE -ChildPath ".gradle"
+    $initFile = Join-Path -Path $gradleFolder -ChildPath "init.gradle"
+    $inactiveInitFile = Join-Path -Path $gradleFolder -ChildPath "INACTIVE_init.gradle_INACTIVE"
+
+    if (Test-Path -Path $initFile -PathType Leaf) {
+        Rename-Item -Path $initFile -NewName "INACTIVE_init.gradle_INACTIVE" -Force
+        Write-Host "Outcome: Deactivated i.e. renamed init.gradle to INACTIVE_init.gradle_INACTIVE"
+    }
+    # Check if the INACTIVE_init.gradle_INACTIVE file exists
+    elseif (Test-Path -Path $inactiveInitFile -PathType Leaf) {
+        Rename-Item -Path $inactiveInitFile -NewName "init.gradle" -Force
+        Write-Host "Outcome: Activated i.e. renamed INACTIVE_init.gradle_INACTIVE to init.gradle"
+    }
+    else {
+        Write-Host "Error: No init.gradle or INACTIVE_init.gradle_INACTIVE file found."
+    }
 }
 
 function GenerateUuid {
@@ -173,51 +254,8 @@ function GenerateUlid {
     Write-Host "ULID ($ulid) copied to clipboard."
 }
 
-function GenerateUlidSilently {
-    $ulid_encoding = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
-    $ulid_encoding_length = $ulid_encoding.Length
-    $time_now = [UInt64]((([datetime]::UtcNow).Ticks - 621355968000000000) / 10000)
-    $created_string = ''
-    for ($i = 10; $i -gt 0; $i--) {
-        $Mod = [int]($time_now % $ulid_encoding_length)
-        $created_string = $ulid_encoding[$Mod] + $created_string
-        $time_now = ($time_now - $Mod) / $ulid_encoding_length
-    }
-    $timestamp_component = $created_string
-    $created_string = ''
-    $random = [random]::new()
-    for ($i = 16; $i -gt 0; $i--) {
-        $random_index = [int]([math]::Floor($ulid_encoding_length * $random.NextDouble()))
-        $created_string = $ulid_encoding[$random_index] + $created_string
-        Start-Sleep -Milliseconds 1
-    }
-    $random_component = $created_string
-    $ulid = $timestamp_component + $random_component
-    Set-Clipboard -Value $ulid
-}
-
-function ToggleGradleInitFile {
-    Write-Host "Action: "$function" - renames init.gradle file to activate/deactivate it."
-    $gradleFolder = Join-Path -Path $env:USERPROFILE -ChildPath ".gradle"
-    $initFile = Join-Path -Path $gradleFolder -ChildPath "init.gradle"
-    $inactiveInitFile = Join-Path -Path $gradleFolder -ChildPath "INACTIVE_init.gradle_INACTIVE"
-
-    if (Test-Path -Path $initFile -PathType Leaf) {
-        Rename-Item -Path $initFile -NewName "INACTIVE_init.gradle_INACTIVE" -Force
-        Write-Host "Outcome: Deactivated i.e. renamed init.gradle to INACTIVE_init.gradle_INACTIVE"
-    }
-    # Check if the INACTIVE_init.gradle_INACTIVE file exists
-    elseif (Test-Path -Path $inactiveInitFile -PathType Leaf) {
-        Rename-Item -Path $inactiveInitFile -NewName "init.gradle" -Force
-        Write-Host "Outcome: Activated i.e. renamed INACTIVE_init.gradle_INACTIVE to init.gradle"
-    }
-    else {
-        Write-Host "Error: No init.gradle or INACTIVE_init.gradle_INACTIVE file found."
-    }
-}
-
 function FixPackageJsonPortsNames {
-    Write-Host "Action: "$function" - Recursively searches through work FE repo for package.json files and replaces all occurrences of '-p `${PORT:=3000}' with '-p 3000'."
+    Write-Host "Action: "$function" - Recursively searches through a repo for package.json files and replaces all occurrences of '-p `${PORT:=3000}' with '-p 3000'."
     Write-Host "Fetching files..."
     $files = Get-ChildItem -Path "C:\path\to\repo" -Filter 'package.json' -Recurse -File
     foreach ($file in $files) {
@@ -236,35 +274,42 @@ function FixPackageJsonPortsNames {
 
 function Help {
     Write-Host "Action: "$function" - lists available commands."
-    Write-Host "mp     : Copy MySQL Docker container port number to clipboard"
-    Write-Host "mid    : Set MySQL Docker container id as variable"
-    Write-Host "mc     : Executes a MySQL command in a Docker container e.g. container_id::SHOW DATABASES"
-    Write-Host "j17    : Switch to Java 17"
-    Write-Host "j21    : Switch to Java 21"
+    Write-Host "[ Docker ]"
+    Write-Host "drcv   : Remove unused containers and volumes"
+    Write-Host "drv    : Remove unused volumes"
+    Write-Host "dsrc   : Stop and remove all containers"
+    Write-Host "dsrcv  : Stop and remove all containers and volumes"
+    Write-Host "nmc    : Spin up new MySQL container and copies environment variables to clipboard"
+    Write-Host "mp     : Copy MySQL container port number to clipboard"
+    Write-Host "mid    : Set MySQL container id as variable"
+    Write-Host "mc     : Execute a MySQL command in a container (use with argument 'container_name::command' or just 'command')"
+    Write-Host "infv   : Copies variables of running local infra with localstack and MySQL to clipboard"
+    Write-Host "[ System ]"
     Write-Host "gp     : Get TCP connections (for port specified)"
     Write-Host "pr     : Get process information for a given PID"
-    Write-Host "drcv   : Remove unused Docker containers and volumes"
-    Write-Host "drv    : Remove unused Docker volumes"
-    Write-Host "dsrc   : Stop and remove all Docker containers"
-    Write-Host "dsrcv  : Stop and remove all Docker containers and volumes"
+    Write-Host "[ Java ]"
+    Write-Host "j17    : Switch to Java Temurin 17"
+    Write-Host "j19    : Switch to Java Temurin 19"
+    Write-Host "ginit  : Set Gradle init file to active or inactive"
+    Write-Host "[ Utility ]"
     Write-Host "uuid   : Generate a random UUID"
     Write-Host "ulid   : Generate a random ULID"
     Write-Host "ulids  : Generate a random ULID silently i.e only copy to clipboard"
-    Write-Host "ginit  : Set Gradle init file to active or inactive"
-    Write-Host "fixfe  : Recursively searches for package.json files in work FE repo and makes ports Powershell syntax compatible"
+    Write-Host "fixfe  : Recursively searches for package.json files in a repo and makes ports Powershell syntax compatible"
     Write-Host "?      : Show this list of parameters"
 }
 
 function ExecuteParameter($function, $arg) {
     if ($null -ne $arg) {
-        Write-Host "Argument: "$arg
+        Write-Host "Argument: '"$arg"' - will be ignored if function does not require it."
     }
     switch ($function) {
-        {$_ -eq "mp" -or $_ -eq "mysql" -or $_ -eq "mysql-port"} { GetMysqlDockerContainerPortNumber }
-        {$_ -eq "mid" } { GetMysqlDockerContainerId }
-        {$_ -eq "mc" } { ExecuteCommandInMySqlContainer($arg) }
-        {$_ -eq "j17" -or $_ -eq "java17"} { SwitchTo-Java17 }
-        {$_ -eq "j19" -or $_ -eq "java19"} { SwitchTo-Java19 }
+        {$_ -eq "nmc"} { SpinUpNewMysqlDockerContainer }
+        {$_ -eq "mp"} { GetMysqlDockerContainerPortNumber }
+        {$_ -eq "mid"} { GetMysqlDockerContainerId }
+        {$_ -eq "mc"} { ExecuteCommandInMySqlContainer($arg) }
+        {$_ -eq "j17"} { SwitchTo-Java17 }
+        {$_ -eq "j19"} { SwitchTo-Java19 }
         {$_ -eq "gp"} { GetPortInfo }
         {$_ -eq "pr"} { GetProcessInfo }
         {$_ -eq "drcv" -or $_ -eq "drmcv"} { RemoveUnusedDockerContainersAndVolumes }
@@ -276,13 +321,14 @@ function ExecuteParameter($function, $arg) {
         {$_ -eq "ulids"} { GenerateUlidSilently }
         {$_ -eq "ginit"} { ToggleGradleInitFile }
         {$_ -eq "fixfe"} { FixPackageJsonPortsNames }
+        {$_ -eq "infv"} { CopyInfraVariablesToClipboard }
         {$_ -eq "?" -or $_ -eq "help"} { Help }
         default { Write-Host "Error: Invalid parameter. No action taken."; break }
     }
 }
 
 if ($null -eq $f) {
-    Write-Host "Need to provide one or two parameter(s). No action taken."
+    Write-Host "Need to provide one parameter (and optionally arguments). No action taken."
 } else {
     if ($null -ne $arg) {
         ExecuteParameter $f $arg
