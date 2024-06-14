@@ -359,6 +359,7 @@ Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 Set-Alias -Name idea -Value 'C:\Users\{...}\AppData\Local\Programs\IntelliJ IDEA Ultimate\bin\idea64.exe'
 Set-Alias -Name webstorm -Value 'C:\Users\{...}\AppData\Local\Programs\WebStorm\bin\webstorm64.exe'
 Set-Alias -Name rider -Value 'C:\Users\{...}\AppData\Local\Programs\Rider\bin\rider64.exe'
+Set-Alias -Name c -Value clear
 Set-Alias -Name '..' -Value cd..
 Set-Alias -Name '...' -Value cd.. ; cd..
 Set-Alias -Name '....' -Value cd.. ; cd.. ; cd..
