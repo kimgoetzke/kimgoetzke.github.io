@@ -1,5 +1,5 @@
 ---
-title: "Basic Bash commands"
+title: "Bash for noobs"
 date: 16 Mar 2023
 draft: false
 tags: [Bash, Linux]
