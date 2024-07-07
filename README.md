@@ -12,7 +12,8 @@ way to host a few reminders.
 
 #### Using NixOS?
 
+If you have `direnv` installed, `hugo` will be made available in your shell. If not, you can start a nix-shell with:
+
 ```nix
 nix-shell -p hugo
-hugo server
 ```
