@@ -16,11 +16,14 @@ Komorebi is a window tiling manager for Windows.
 4. Hit `Win + R` and type `shell:startup` to open the `Startup` folder.
 5. Create a shortcut of your `.ahk` file in the `Startup` folder to run it on startup.
 6. Create a `komorebi.json` file with your desired configuration (see section below).
-7. Open your PowerShell profile.
-8. Set `$Env:KOMOREBI_CONFIG_HOME` to a directory of your choice e.g. `C:\Users\kbgoe\Documents\Komorebi`.
-9. Add `komorebic-no-console.exe start --config "C:\Users\kbgoe\Documents\Komorebi\komorebi.json"` to your PowerShell
-   profile to start Komorebi on startup. This is a workaround
-   because `komorebic enable-autostart --config "C:\Users\kbgoe\Documents\Komorebi\komorebi.json"` doesn't work.
+7. If it wasn't installed by default, get the `applications.yaml` file
+   from https://github.com/LGUG2Z/komorebi-application-specific-configuration.
+8. Open your PowerShell profile.
+9. Set `$Env:KOMOREBI_CONFIG_HOME` to a directory of your choice e.g. `C:\Users\kbgoe\Documents\Komorebi`. This is where
+   your `komorebi.json` and `applications.yaml` must be stored.
+10. Add `komorebic-no-console.exe start --config "C:\Users\kbgoe\Documents\Komorebi\komorebi.json"` to your PowerShell
+    profile to start Komorebi on startup. This 1) assumes you autostart a terminal (e.g. quake mode) and 2) assumes
+    that `komorebic enable-autostart --config "C:\Users\kbgoe\Documents\Komorebi\komorebi.json"` still doesn't work.
 
 ## Example AHK keybindings
 
