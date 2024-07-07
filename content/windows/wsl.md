@@ -4,6 +4,7 @@ draft: false
 date: 2023-03-14
 tags: [WSL, Linux, Windows]
 ---
+
 ## How to install
 ```powershell
 wsl --install # This will install Ubuntu

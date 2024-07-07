@@ -1,12 +1,12 @@
 ---
-title: AHK
+title: AutoHotkey
 date: 2024-07-07
 draft: false
-tags: ["AHK", "Windows", "AutoHotkey"]
+tags: ["AHK", "Windows", "AutoHotkey", "Scripts"]
 toc: false
 ---
 
-# Get started
+## Get started
 
 1. Install with `choco install autohotkey.portable`.
 2. Create your `.ahk` file.
@@ -14,7 +14,7 @@ toc: false
 4. Hit `Win + R` and type `shell:startup` to open the `Startup` folder.
 5. Create a shortcut of your `.ahk` file in the `Startup` folder to run it on startup.
 
-# Example
+## Example
 
 ```ahk
 ; Win + Shift + Q => Close active window

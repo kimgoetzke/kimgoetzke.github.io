@@ -355,6 +355,10 @@ oh-my-posh init pwsh --config 'C:\Users\{...}\oh-my-posh\emodipt-kim.omp.json' |
 # Shows navigable menu of all options when hitting Tab
 Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 
+# Komorebi
+#$Env:KOMOREBI_CONFIG_HOME = 'C:\Users\{...}\Documents\Komorebi'
+#komorebic-no-console.exe start --config "C:\Users\{...}\Documents\Komorebi\komorebi.json"
+
 # App sortcuts
 Set-Alias -Name idea -Value 'C:\Users\{...}\AppData\Local\Programs\IntelliJ IDEA Ultimate\bin\idea64.exe'
 Set-Alias -Name webstorm -Value 'C:\Users\{...}\AppData\Local\Programs\WebStorm\bin\webstorm64.exe'
@@ -364,13 +368,14 @@ Set-Alias -Name '..' -Value cd..
 Set-Alias -Name '...' -Value cd.. ; cd..
 Set-Alias -Name '....' -Value cd.. ; cd.. ; cd..
 Set-Alias -Name '.....' -Value cd.. ; cd.. ; cd.. ; cd..
+Set-Alias -Name 'c' -Value clear
 
 # Folder shortcuts
 function fo {
     switch ($args[0]) {
-        {$_ -eq "user" -or $_ -eq "home"} { Set-Location -Path 'C:\Users\{...}' }
-        {$_ -eq "downloads" -or $_ -eq "dl"} { Set-Location -Path 'C:\Users\{...}\Downloads' }
-        {$_ -eq "proper"} { Set-Location -Path 'C:\Users\{...}\projects' }
+        { $_ -eq "user" -or $_ -eq "home" } { Set-Location -Path 'C:\Users\{...}' }
+        { $_ -eq "downloads" -or $_ -eq "dl" } { Set-Location -Path 'C:\Users\{...}\Downloads' }
+        { $_ -eq "proper" } { Set-Location -Path 'C:\Users\{...}\projects' }
         default { 
             Write-Host "Error: Folder not recognised." 
             Write-Host "Recognised are: user/home, proper, dl/downloads." 
@@ -382,10 +387,13 @@ function fo {
 # Allows opening files in VS Code e.g. 'fi ssh'
 function fi {
     switch ($args[0]) {
-        {$_ -eq "ssh"} { code 'C:\Users\{...}\.ssh\config' } 
-        {$_ -eq "aws"} { code 'C:\Users\{...}\.aws\config' } 
-        {$_ -eq "profile"} { code 'C:\Users\{...}\Documents\PowerShell\Microsoft.PowerShell_profile.ps1' } 
-        {$_ -eq "kim"} { code 'C:\Users\{...}\Documents\PowerShell\Scripts\kim.ps1' } 
+        { $_ -eq "ssh" } { code 'C:\Users\{...}\.ssh\config' } 
+        { $_ -eq "aws" } { code 'C:\Users\{...}\.aws\config' } 
+        { $_ -eq "profile" } { code 'C:\Users\{...}\Documents\PowerShell\Microsoft.PowerShell_profile.ps1' } 
+        { $_ -eq "kim" } { code 'C:\Users\{...}\Documents\PowerShell\Scripts\kim.ps1' }
+        { $_ -eq "ahk" } { code 'C:\Users\{...}\Documents\AHK\shortcuts.ahk' }
+        { $_ -eq "komokey" } { code 'C:\Users\{...}\Documents\AHK\komorebi.ahk' }
+        { $_ -eq "komocon" } { code 'C:\Users\{...}\Documents\Komorebi\komorebi.json' } 
         default { 
             Write-Host "Error: File not recognised." 
             Write-Host "Recognised files are ssh, aws, kim, profile."

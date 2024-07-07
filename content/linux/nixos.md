@@ -3,9 +3,10 @@ title: NixOS
 draft: false
 date: 2024-06-24
 tags: [ Linux, NixOS, Nix ]
+toc: true
 ---
 
-## How to fetch files without Flakes
+## Fetch files without Flakes
 
 ```nix
 let
@@ -36,7 +37,7 @@ How do you get the hash? Use `pkgs.lib.fakeHash`, then build, then copy the hash
 prefetch with `nix shell nixpkgs#nix-prefetch-scripts` and then `nix-prefetch-url https://somewebsite/somefile.png`.
 {{< /hint >}}
 
-## How to fetch Git repositories without Flakes
+## Fetch Git repositories without Flakes
 
 ```nix
 source = pkgs.fetchgit {
@@ -61,7 +62,7 @@ For convenience use `nix shell nixpkgs#nurl` with `nurl "https://your-repo-url"`
 complete fetch expression with all attributes.
 {{< /hint >}}
 
-## How to fetch anything with Flakes
+## Fetch anything with Flakes
 
 ```nix
 {
