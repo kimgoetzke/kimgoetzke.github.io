@@ -17,6 +17,9 @@ toc: false
 ## Example
 
 ```ahk
+#Requires AutoHotkey v2.0.2
+#SingleInstance Force
+
 ; Win + Shift + Q => Close active window
 #+q:: PostMessage 0x112, 0xF060, , , "A"
 
@@ -35,6 +38,12 @@ toc: false
 ; Win + J => JetBrains Toolbox
 #j::WinExist("ahk_exe jetbrains-toolbox.exe") ? WinActivate() : MsgBox("JetBrains Toolbox isn't visible but may be running. Opening the minimised window has not been implemented yet.", "Cannot open JetBrains Toolbox")
 
+; Win + W => JetBrains Webstorm
+#w::WinExist("ahk_exe webstorm64.exe") ? WinActivate() : Run("C:\Users\{...}\AppData\Local\Programs\WebStorm\bin\webstorm64.exe")
+
+; Win + I => JetBrains IntelliJ
+#i::WinExist("ahk_exe idea64.exe") ? WinActivate() : Run("C:\Users\{...}\AppData\Local\Programs\IntelliJ IDEA Ultimate\bin\idea64.exe")
+
 ; Win + C => VS Code
 #c:: WinExist("ahk_exe Code.exe") ? WinActivate() : Run("C:\Users\{...}\AppData\Local\Programs\Microsoft VS Code\Code.exe")
 
@@ -44,7 +53,7 @@ toc: false
 ; Win + P => Postman
 #p:: WinExist("ahk_exe Postman.exe") ? WinActivate() : Run("C:\Users\{...}\AppData\Local\Postman\Postman.exe")
 
-; Win + W = Window Spy
+; Win + S = Window Spy
 #w::Run("C:\ProgramData\chocolatey\lib\autohotkey.portable\tools\AutoHotkey.exe C:\ProgramData\chocolatey\lib\autohotkey.portable\tools\UX\WindowSpy.ahk")
 
 ; Win + Shift + F5 => Toggle Taskbar
