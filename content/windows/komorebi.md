@@ -15,21 +15,21 @@ Komorebi is a window tiling manager for Windows.
 3. Make sure to set `AutoHotkey.exe` as the default program to open `.ahk` files.
 4. Hit `Win + R` and type `shell:startup` to open the `Startup` folder.
 5. Create a shortcut of your `.ahk` file in the `Startup` folder to run it on startup.
-6. Create a `komorebi.json` file with your desired configuration (see section below).
-7. If it wasn't installed by default, get the `applications.yaml` file
-   from https://github.com/LGUG2Z/komorebi-application-specific-configuration.
-8. Open your PowerShell profile.
-9. Set `$Env:KOMOREBI_CONFIG_HOME` to a directory of your choice e.g. `C:\Users\kbgoe\Documents\Komorebi`. This is where
+6. Add `$Env:KOMOREBI_CONFIG_HOME` as a global system environment variable, setting it to a directory of your choice
+   e.g. `C:\Users\{user}\.config\Komorebi`. This is where
    your `komorebi.json` and `applications.yaml` must be stored.
-10. Add `komorebic-no-console.exe start --config "C:\Users\kbgoe\Documents\Komorebi\komorebi.json"` to your PowerShell
-    profile to start Komorebi on startup. This 1) assumes you autostart a terminal (e.g. quake mode) and 2) assumes
-    that `komorebic enable-autostart --config "C:\Users\kbgoe\Documents\Komorebi\komorebi.json"` still doesn't work.
+7. Create a `komorebi.json` file with your desired configuration (see section below). Make sure to set
+   the `app_specific_configuration_path` to the path of your `applications.yaml` file, if required (see next step).
+8. If it wasn't installed by default, get the `applications.yaml` file
+   from https://github.com/LGUG2Z/komorebi-application-specific-configuration.
 
 ## Example AHK keybindings
 
 ```ahk
 #Requires AutoHotkey v2.0.2
 #SingleInstance Force
+
+Run("komorebic-no-console.exe start")
 
 Komorebic(cmd) {
     RunWait(format("komorebic.exe {}", cmd), , "Hide")
@@ -113,6 +113,11 @@ Komorebic(cmd) {
     "monocle": "#b48ead",
     "unfocused": "#434c5e"
   },
+   "animation": {
+      "enabled": true,
+      "duration": 100,
+      "easing": "EaseInQuad"
+   },
   "stackbar": {
     "height": 30,
     "mode": "OnStack",
