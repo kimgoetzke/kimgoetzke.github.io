@@ -171,8 +171,13 @@ Komorebic(cmd) {
     },
     {
       "kind": "Title",
-      "id": "Commit: ",
+      "id": "Commit",
       "matching_strategy": "StartsWith"
+    },
+    {
+      "kind": "Exe",
+      "id": "ShareX.exe",
+      "matching_strategy": "Equals"
     }
   ]
 }
