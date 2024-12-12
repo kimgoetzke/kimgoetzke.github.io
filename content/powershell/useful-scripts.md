@@ -18,27 +18,27 @@ $f=$args[0]
 $arg=$args[1]
 
 function RemoveUnusedDockerContainersAndVolumes {
-    Write-Host "Action: "$function" - removes all unused Docker containers & volumes."
+    Write-Host "Action: $function - removes all unused Docker containers & volumes."
     docker container prune -f && docker volume prune -f
 }
 
 function RemoveUnusedDockerVolumes {
-    Write-Host "Action: "$function" - removes all unused Docker volumes."
+    Write-Host "Action: $function - removes all unused Docker volumes."
     docker volume prune -f
 }
 
 function StopAndRemoveAllDockerContainers {
-    Write-Host "Action: "$function" - stops and removes all Docker containers."
+    Write-Host "Action: $function - stops and removes all Docker containers."
     docker stop $(docker ps -a -q) && docker container prune -f
 }
 
 function StopAndRemoveUnusedDockerContainersAndVolumes {
-    Write-Host "Action: "$function" - stops and removes all Docker containers and removes all unused Docker volumes."
+    Write-Host "Action: $function - stops and removes all Docker containers and removes all unused Docker volumes."
     docker stop $(docker ps -a -q) && docker container prune -f && docker volume prune -f
 }
 
 function SpinUpNewMysqlDockerContainer {
-    Write-Host "Action: "$function" - spins up new MySQL Docker container and copies env vars to clipboard."
+    Write-Host "Action: $function - spins up new MySQL Docker container and copies env vars to clipboard."
     $currentContainer = docker ps -f "name=local_mysql" --format "{{.ID}}"
     if ($null -eq $currentContainer) {
         Write-Host "No MySQL container found. Spinning up new container..."
@@ -60,7 +60,7 @@ function SpinUpNewMysqlDockerContainer {
 }
 
 function GetMysqlDockerContainerPortNumber {
-    Write-Host "Action: "$function" - copies MySQL Docker container port number to clipboard."
+    Write-Host "Action: $function - copies MySQL Docker container port number to clipboard."
     $sql_docker_container=$(docker ps | Select-String -Pattern "mysql:")
     if ($null -eq $sql_docker_container) {
         Write-Host "Port number not found. Check if MySQL container is running."
@@ -72,7 +72,7 @@ function GetMysqlDockerContainerPortNumber {
 }
 
 function GetMysqlDockerContainerId {
-    Write-Host "Action: "$function" - Sets the MySQL Docker container id as a variable."
+    Write-Host "Action: $function - sets the MySQL Docker container id as a variable."
     $sql_container_name=$(docker ps | Select-String -Pattern "mysql:")
     if ($null -eq $sql_container_name) {
         Write-Host "Container not found. Check if MySQL container is running."
@@ -85,7 +85,7 @@ function GetMysqlDockerContainerId {
 }
 
 function ExecuteCommandInMySqlContainer {
-    Write-Host "Action: "$function" - Executes a MySQL command in a Docker container e.g. container_name::SHOW DATABASES."
+    Write-Host "Action: $function - executes a MySQL command in a Docker container e.g. container_name::SHOW DATABASES."
     $parts = $arg -split "::"
     if ($parts.Count -gt 2) {
         Write-Host "Warning: More than two parts (separated by '::') detected. Only part 1 (as container name) and 2 (as command) will be used."
@@ -104,7 +104,7 @@ function ExecuteCommandInMySqlContainer {
 }
 
 function CopyInfraVariablesToClipboard {
-    Write-Host "Action: "$function" - Copies variables for running local infra with localstack and MySQL to clipboard."
+    Write-Host "Action: $function - copies variables for running local infra with localstack and MySQL to clipboard."
     $mysqlPortOutput = docker port local_mysql
     $mysqlPort = 'ERROR'
     if ($null -eq $mysqlPortOutput) {
@@ -126,8 +126,32 @@ function CopyInfraVariablesToClipboard {
     Write-Host "Copied to clipboard: $($testEnvVars)"
 }
 
+function WhereIs {
+    Write-Host "Action: $function - finds path of an executable."
+    if ($arg -eq [string]::empty -or $arg -eq $null) {
+        Write-Host "No executable name provided."
+        $executableName = Read-Host -Prompt "Enter name of executable (excluding .exe)"
+        $ErrorActionPreference = 'SilentlyContinue'
+        $executablePath = (Get-Command "$executableName.exe").Path
+        if ($null -eq $executablePath) {
+            Write-Host "Error: Executable $executableName.exe cannot be found."
+        } else {
+            Write-Host $executablePath
+        }
+        return
+    }
+    Write-Host "Attempting to find location of $arg.exe..."
+    $ErrorActionPreference = 'SilentlyContinue'
+    $executablePath = (Get-Command "$arg.exe").Path
+    if ($null -eq $executablePath) {
+        Write-Host "Error: Executable $executableName.exe cannot be found."
+    } else {
+        Write-Host $executablePath
+    }
+}
+
 function GetPortInfo {
-    Write-Host "Action: "$function" - lists TCP connections (optional: using port number specified)."
+    Write-Host "Action: $function - lists TCP connections (optional: using port number specified)."
     $port = Read-Host -Prompt "Enter port number"
     Write-Host ""
     if ($port -eq [string]::empty) {
@@ -155,7 +179,7 @@ function GetPortInfo {
 }
 
 function GetProcessInfo {
-    Write-Host "Action: "$function" - returns information about process for a given PID."
+    Write-Host "Action: $function - returns information about process for a given PID."
     $process_id = Read-Host -Prompt "Enter PID"
     if ($process_id -eq [string]::empty) {
         Write-Host "No PID provided."
@@ -163,6 +187,15 @@ function GetProcessInfo {
         $ErrorActionPreference = 'SilentlyContinue'
         Get-Process -id $process_id | Select-Object *
     }
+}
+
+function ReloadKomorebi {
+    Write-Host "Action: $function - stops and re-starts Komorebi."
+    komorebic.exe stop
+    Write-Host "Waiting to re-start Komorebi..."
+    Start-Sleep -Seconds 1
+    komorebic.exe start --config "$Env:KOMOREBI_CONFIG_HOME\komorebi.json"
+    Write-Host "Please reload the AHK script containing your Komorebi shortcuts..."
 }
 
 function GenerateUlidSilently {
@@ -189,21 +222,21 @@ function GenerateUlidSilently {
 }
 
 function SwitchTo-Java17 {
-    Write-Host "Action: "$function" - switches to specified Java version."
+    Write-Host "Action: $function - switches to specified Java version."
     $Env:JAVA_HOME="C:\Program Files (x86)\Eclipse Adoptium\jdk-17.0.11.9-hotspot" # Change accordingly
     $Env:Path="$Env:JAVA_HOME\bin;$Env:Path"
     Write-Host "Java Adoptium Temurin 17 activated."
 }
 
 function SwitchTo-Java19 {
-    Write-Host "Action: "$function" - switches to specified Java version."
+    Write-Host "Action: $function - switches to specified Java version."
     $Env:JAVA_HOME="C:\Program Files (x86)\Eclipse Adoptium\jdk-19.0.2.7-hotspot\" # Change accordingly
     $Env:Path="$Env:JAVA_HOME\bin;$Env:Path" 
     Write-Host "Java Adoptium Temurin 19 activated."
 }
 
 function ToggleGradleInitFile {
-    Write-Host "Action: "$function" - renames init.gradle file to activate/deactivate it."
+    Write-Host "Action: $function - renames init.gradle file to activate/deactivate it."
     $gradleFolder = Join-Path -Path $env:USERPROFILE -ChildPath ".gradle"
     $initFile = Join-Path -Path $gradleFolder -ChildPath "init.gradle"
     $inactiveInitFile = Join-Path -Path $gradleFolder -ChildPath "INACTIVE_init.gradle_INACTIVE"
@@ -223,14 +256,14 @@ function ToggleGradleInitFile {
 }
 
 function GenerateUuid {
-    Write-Host "Action: "$function" - generates random UUID."
+    Write-Host "Action: $function - generates random UUID."
     $uuid=[guid]::NewGuid().ToString()
     Set-Clipboard -Value $uuid
     Write-Host "UUID ($uuid) copied to clipboard."
 }
 
 function GenerateUlid {
-    Write-Host "Action: "$function" - generates random ULID."
+    Write-Host "Action: $function - generates random ULID."
     $ulid_encoding = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
     $ulid_encoding_length = $ulid_encoding.Length
     $time_now = [UInt64]((([datetime]::UtcNow).Ticks - 621355968000000000) / 10000)
@@ -255,7 +288,7 @@ function GenerateUlid {
 }
 
 function FixPackageJsonPortsNames {
-    Write-Host "Action: "$function" - Recursively searches through a repo for package.json files and replaces all occurrences of '-p `${PORT:=3000}' with '-p 3000'."
+    Write-Host "Action: $function - Recursively searches through a repo for package.json files and replaces all occurrences of '-p `${PORT:=3000}' with '-p 3000'."
     Write-Host "Fetching files..."
     $files = Get-ChildItem -Path "C:\path\to\repo" -Filter 'package.json' -Recurse -File
     foreach ($file in $files) {
@@ -272,36 +305,115 @@ function FixPackageJsonPortsNames {
     Write-Host "Done!"
 }
 
+function DecodeBase64EncodedString {
+    Write-Host "Action: $function - decodes, prints, and copies a base64 encoded string to your clipboard."
+    $base64String = $arg
+    if ($base64String -eq [string]::empty) {
+        Write-Host "No string provided."
+    } else {
+        $decodedBytes = [System.Convert]::FromBase64String($base64String)
+        $decodedString = [System.Text.Encoding]::UTF8.GetString($decodedBytes)
+        Set-Clipboard -Value $decodedString
+        Write-Host "The result, shown below, has been copied to your clipboard:"
+        Write-Host ""
+        Write-Host $decodedString
+    }
+}
+
+function EncodeStringAsBase64 {
+    Write-Host "Action:"$function - encodes, prints, and copies a string as base64 to your clipboard."
+    $string = $arg
+    if ($string -eq [string]::empty -or $string -eq $null) {
+        Write-Host "No string provided."
+    } else {
+        $bytes = [System.Text.Encoding]::UTF8.GetBytes($string)
+        $base64String = [System.Convert]::ToBase64String($bytes)
+        Set-Clipboard -Value $base64String
+        Write-Host "The result, shown below, has been copied to your clipboard:"
+        Write-Host ""
+        Write-Host $base64String
+    }
+}
+
+function DecodeCertificatePemFile {
+    Write-Host "Action: $function - decodes and prints the content of a certificate PEM file."
+    $pemFile = $arg
+    if ($pemFile -eq [string]::empty -or $pemFile -eq $null) {
+        Write-Host "No file provided."
+    } else {
+        $pemContent = Get-Content -Path $pemFile
+        DecodeCertificateString($pemContent)
+    }
+}
+
+function DecodeCertificateString($certString) {
+    if ($certString -eq [string]::empty -or $certString -eq $null) {
+        $certString = $arg
+    }
+    if ($certString -eq [string]::empty -or $certString -eq $null) {
+        Write-Host "No string provided."
+    } else {
+        $base64Cert = $certString -replace '-----BEGIN CERTIFICATE-----', '' -replace '-----END CERTIFICATE-----', '' -replace '\s+', ''
+        $decodedBytes = [System.Convert]::FromBase64String($base64Cert)
+        $certificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 -ArgumentList @(,$decodedBytes)
+        Write-Host "Content of decoded certificate:"
+        Write-Host $certificate
+        $certString = ""
+    }
+}
+
+function DecodePrivateKeyPemFile {
+    Write-Host "Action: $function - decodes and prints the content of a PEM private key file."
+    $pemFile = $arg
+    if ($pemFile -eq [string]::empty) {
+        Write-Host "No file provided."
+    } else {
+        $base64PrivKey = $privKeyContent -replace '-----BEGIN PRIVATE KEY-----', '' -replace '-----END PRIVATE KEY-----', '' -replace '\s+', ''
+        $decodedBytes = [System.Convert]::FromBase64String($base64PrivKey)
+        $stringPrivKey = [System.Text.Encoding]::UTF8.GetString($decodedBytes)
+        Write-Output "Content of the private key:"
+        Write-Output $stringPrivKey
+    }
+}
+
 function Help {
-    Write-Host "Action: "$function" - lists available commands."
+    Write-Host "Action: $function - lists available commands."
     Write-Host "[ Docker ]"
-    Write-Host "drcv   : Remove unused containers and volumes"
-    Write-Host "drv    : Remove unused volumes"
-    Write-Host "dsrc   : Stop and remove all containers"
-    Write-Host "dsrcv  : Stop and remove all containers and volumes"
-    Write-Host "nmc    : Spin up new MySQL container and copies environment variables to clipboard"
-    Write-Host "mp     : Copy MySQL container port number to clipboard"
-    Write-Host "mid    : Set MySQL container id as variable"
-    Write-Host "mc     : Execute a MySQL command in a container (use with argument 'container_name::command' or just 'command')"
-    Write-Host "infv   : Copies variables of running local infra with localstack and MySQL to clipboard"
+    Write-Host "drcv       : Remove unused containers and volumes"
+    Write-Host "drv        : Remove unused volumes"
+    Write-Host "dsrc       : Stop and remove all containers"
+    Write-Host "dsrcv      : Stop and remove all containers and volumes"
+    Write-Host "nmc        : Spin up new MySQL container and copies environment variables to clipboard"
+    Write-Host "mp         : Copy MySQL container port number to clipboard"
+    Write-Host "mid        : Set MySQL container id as variable"
+    Write-Host "mc         : Execute a MySQL command in a container (use with argument 'container_name::command' or just 'command')"
+    Write-Host "infv       : Copies variables of running local infra with localstack and MySQL to clipboard"
     Write-Host "[ System ]"
-    Write-Host "gp     : Get TCP connections (for port specified)"
-    Write-Host "pr     : Get process information for a given PID"
+    Write-Host "where      : Find path of an executable"
+    Write-Host "gp         : Get TCP connections (for port specified)"
+    Write-Host "pr         : Get process information for a given PID"
+    Write-Host "komoreload : Stops and starts komorebi to reload configuration"
     Write-Host "[ Java ]"
-    Write-Host "j17    : Switch to Java Temurin 17"
-    Write-Host "j19    : Switch to Java Temurin 19"
-    Write-Host "ginit  : Set Gradle init file to active or inactive"
+    Write-Host "j17        : Switch to Java Temurin 17"
+    Write-Host "j19        : Switch to Java Temurin 19"
+    Write-Host "ginit      : Set Gradle init file to active or inactive"
+    Write-Host "[ Security ]"
+    Write-Host "decb64     : Decodes and prints a base64 encoded string (use with base64 string as argument)"
+    Write-Host "encb64     : Encodes and prints a string as base64 (use with string as argument)"
+    Write-Host "deccertstr : Decodes and prints the content certificate (use with certificate string as argument)"
+    Write-Host "deccertpem : Decodes and prints the content of a PEM certificate file (use with absolute file path as argument)"
+    Write-Host "deckeypem  : Decodes and prints the content of a PEM private key file (use with absolute file path as argument)"
     Write-Host "[ Utility ]"
-    Write-Host "uuid   : Generate a random UUID"
-    Write-Host "ulid   : Generate a random ULID"
-    Write-Host "ulids  : Generate a random ULID silently i.e only copy to clipboard"
-    Write-Host "fixfe  : Recursively searches for package.json files in a repo and makes ports Powershell syntax compatible"
-    Write-Host "?      : Show this list of parameters"
+    Write-Host "uuid       : Generate a random UUID"
+    Write-Host "ulid       : Generate a random ULID"
+    Write-Host "ulids      : Generate a random ULID silently i.e only copy to clipboard"
+    Write-Host "fixfe      : Recursively searches for package.json files in a repo and makes ports Powershell syntax compatible"
+    Write-Host "?          : Show this list of parameters"
 }
 
 function ExecuteParameter($function, $arg) {
     if ($null -ne $arg) {
-        Write-Host "Argument: '"$arg"' - will be ignored if function does not require it."
+        Write-Host "Argument: '$arg' - will be ignored if function does not require it."
     }
     switch ($function) {
         {$_ -eq "nmc"} { SpinUpNewMysqlDockerContainer }
@@ -312,6 +424,8 @@ function ExecuteParameter($function, $arg) {
         {$_ -eq "j19"} { SwitchTo-Java19 }
         {$_ -eq "gp"} { GetPortInfo }
         {$_ -eq "pr"} { GetProcessInfo }
+        {$_ -eq "where"} { WhereIs($arg) }
+        {$_ -eq "komoreload"} { ReloadKomorebi }
         {$_ -eq "drcv" -or $_ -eq "drmcv"} { RemoveUnusedDockerContainersAndVolumes }
         {$_ -eq "drv" -or $_ -eq "drmv"} { RemoveUnusedDockerVolumes }
         {$_ -eq "dsrc"} { StopAndRemoveAllDockerContainers }
@@ -321,6 +435,11 @@ function ExecuteParameter($function, $arg) {
         {$_ -eq "ulids"} { GenerateUlidSilently }
         {$_ -eq "ginit"} { ToggleGradleInitFile }
         {$_ -eq "fixfe"} { FixPackageJsonPortsNames }
+        {$_ -eq "encb64"} { EncodeStringAsBase64($arg) }
+        {$_ -eq "decb64"} { DecodeBase64EncodedString($arg) }
+        {$_ -eq "deccertpem"} { DecodeCertificatePemFile($arg) }
+        {$_ -eq "deccertstr"} { DecodeCertificateString($arg) }
+        {$_ -eq "deckeypem"} { DecodePrivateKeyPemFile($arg) }
         {$_ -eq "infv"} { CopyInfraVariablesToClipboard }
         {$_ -eq "?" -or $_ -eq "help"} { Help }
         default { Write-Host "Error: Invalid parameter. No action taken."; break }
