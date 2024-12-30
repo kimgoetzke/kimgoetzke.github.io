@@ -111,7 +111,8 @@ Komorebic(cmd) {
     "single": "#88c0d0",
     "stack": "#a3be8c",
     "monocle": "#b48ead",
-    "unfocused": "#434c5e"
+    "unfocused": "#434c5e",
+    "floating": "#ebcb8b"
   },
    "animation": {
       "enabled": true,
@@ -175,9 +176,24 @@ Komorebic(cmd) {
       "matching_strategy": "StartsWith"
     },
     {
-      "kind": "Exe",
-      "id": "ShareX.exe",
-      "matching_strategy": "Equals"
+       "kind": "Title",
+       "id": "Commit: ",
+       "matching_strategy": "StartsWith"
+    },
+    {
+       "kind": "Title",
+       "id": "Clipboard vs ",
+       "matching_strategy": "StartsWith"
+    },
+    {
+       "kind": "Exe",
+       "id": "ShareX.exe",
+       "matching_strategy": "Equals"
+    },
+    {
+       "kind": "Title",
+       "id": "MaxxAudioPro",
+       "matching_strategy": "Equals"
     }
   ]
 }

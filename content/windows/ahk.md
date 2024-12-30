@@ -59,6 +59,50 @@ toc: false
 ; Win + Shift + F5 => Toggle Taskbar
 #+F5::!WinExist("ahk_class Shell_TrayWnd") ? WinShow("ahk_class Shell_TrayWnd") : WinHide("ahk_class Shell_TrayWnd")
 
+; Win + Right Mouse Button => Resize window
+#RButton:: {
+    CoordMode("Mouse", "Screen")            ; Mouse coordinates are relative to the screen
+    MouseGetPos(&startX, &startY, &WinID)   ; Get the initial mouse position and the window ID
+
+    While GetKeyState("RButton", "P") {
+        MouseGetPos(&currentX, &currentY)
+        WinGetPos(&winX, &winY, &winW, &winH, "ahk_id " WinID)
+        newWidth := winW + (currentX - startX)
+        newHeight := winH + (currentY - startY)
+        startX := currentX
+        startY := currentY
+
+        if (newWidth > 50 && newHeight > 50)
+            WinMove(winX, winY, newWidth, newHeight, WinID)
+    }
+    Run("komorebic.exe retile",, "Hide")    ; Retile the windows after resizing
+}
+
+; Win + Left Mouse Button => Move window
+#LButton:: {
+    CoordMode("Mouse", "Screen")            ; Set mouse coordinates relative to the screen
+    MouseGetPos(&startX, &startY, &WinID)   ; Get initial mouse position and the window handle (ID)
+    WinGetPos(&winX, &winY, , , WinID)      ; Get the window's current position
+
+    While GetKeyState("LButton", "P") {
+        MouseGetPos(&currentX, &currentY)   ; Get the current mouse position
+
+        ; Calculate the offset for window movement
+        offsetX := currentX - startX
+        offsetY := currentY - startY
+
+        ; Move the window to the new position
+        WinMove(winX + offsetX, winY + offsetY, , , WinID)
+
+        ; Update starting positions for "smooth" dragging
+        startX := currentX
+        startY := currentY
+        winX := winX + offsetX
+        winY := winY + offsetY
+    }
+    Run("komorebic.exe retile",, "Hide")    ; Retile the windows after resizing
+}
+
 ; |------------- HOTSTRINGS -------------|
 
 ; Today's date
