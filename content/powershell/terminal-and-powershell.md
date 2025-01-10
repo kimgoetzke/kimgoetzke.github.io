@@ -230,6 +230,7 @@ Other random things:
 
 ```powershell
 Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete # Enables auto-complete
+Set-PSReadLineKeyHandler -Chord Ctrl+u -Function RevertLine # Clears the line
 $env:POWERSHELL_UPDATECHECK = 'Off' # Disables update banner in Terminal startup
 ```
 

@@ -471,8 +471,8 @@ the script with e.g. `kim ?` to display the available commands.
 # Initiates OMP styling
 oh-my-posh init pwsh --config 'C:\Users\{...}\oh-my-posh\emodipt-kim.omp.json' | Invoke-Expression
 
-# Shows navigable menu of all options when hitting Tab
 Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
+Set-PSReadLineKeyHandler -Chord Ctrl+u -Function RevertLine
 
 # Komorebi
 #$Env:KOMOREBI_CONFIG_HOME = 'C:\Users\{...}\Documents\Komorebi'
