@@ -5,6 +5,12 @@ Visit https://kimgoetzke.github.io/ to launch this page.
 The purpose of this project was to refresh my CSS skills, practice Hugo and Bulma, and create a simple and accessible
 way to host a few reminders.
 
+## Demo
+
+![Screenshots 1](./assets/screenshot-1.png)
+![Screenshots 2](./assets/screenshot-2.png)
+![Screenshots 3](./assets/screenshot-3.png)
+
 ## How to develop locally
 
 - Run development server with `hugo server`
