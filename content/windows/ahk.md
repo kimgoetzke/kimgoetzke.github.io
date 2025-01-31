@@ -29,8 +29,12 @@ toc: false
 ; Win + M => Explorer
 #m::WinExist('ahk_class CabinetWClass') ? WinActivate() : Run('explorer')
 
-; Win + T = Terminal
-#t::WinExist("ahk_exe WindowsTerminal.exe") ? WinActivate() : Run("wt")
+; Win + T => Terminal
+; #t::WinExist("ahk_exe WindowsTerminal.exe") ? WinActivate() : Run("wt")
+#t:: WinExist("ahk_exe wezterm-gui.exe") ? WinActivate() : Run("wezterm-gui.exe")
+
+; Win + Shift + T => Terminal as admin
+#+t:: Run("*RunAs wezterm-gui.exe")
 
 ; Win + F => Firefox
 #f::WinExist("ahk_class MozillaWindowClass") ? WinActivate() : Run("C:\Program Files\Mozilla Firefox\firefox.exe")
