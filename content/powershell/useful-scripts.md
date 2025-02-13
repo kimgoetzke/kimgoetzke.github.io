@@ -469,19 +469,19 @@ the script with e.g. `kim ?` to display the available commands.
 
 ```powershell
 # Initiates OMP styling
-oh-my-posh init pwsh --config 'C:\Users\{...}\oh-my-posh\emodipt-kim.omp.json' | Invoke-Expression
+oh-my-posh init pwsh --config "$HOME\oh-my-posh\emodipt-kim.omp.json" | Invoke-Expression
 
 Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 Set-PSReadLineKeyHandler -Chord Ctrl+u -Function RevertLine
 
 # Komorebi
-#$Env:KOMOREBI_CONFIG_HOME = 'C:\Users\{...}\Documents\Komorebi'
-#komorebic-no-console.exe start --config "C:\Users\{...}\Documents\Komorebi\komorebi.json"
+#$Env:KOMOREBI_CONFIG_HOME = "$HOME\Documents\Komorebi"
+#komorebic-no-console.exe start --config "$HOME\Documents\Komorebi\komorebi.json"
 
 # App sortcuts
-Set-Alias -Name idea -Value 'C:\Users\{...}\AppData\Local\Programs\IntelliJ IDEA Ultimate\bin\idea64.exe'
-Set-Alias -Name webstorm -Value 'C:\Users\{...}\AppData\Local\Programs\WebStorm\bin\webstorm64.exe'
-Set-Alias -Name rider -Value 'C:\Users\{...}\AppData\Local\Programs\Rider\bin\rider64.exe'
+Set-Alias -Name idea -Value "$HOME\AppData\Local\Programs\IntelliJ IDEA Ultimate\bin\idea64.exe"
+Set-Alias -Name webstorm -Value "$HOME\AppData\Local\Programs\WebStorm\bin\webstorm64.exe"
+Set-Alias -Name rider -Value "$HOME\AppData\Local\Programs\Rider\bin\rider64.exe"
 Set-Alias -Name c -Value clear
 Set-Alias -Name '..' -Value cd..
 Set-Alias -Name '...' -Value cd.. ; cd..
@@ -492,12 +492,19 @@ Set-Alias -Name 'c' -Value clear
 # Folder shortcuts
 function fo {
     switch ($args[0]) {
-        { $_ -eq "user" -or $_ -eq "home" } { Set-Location -Path 'C:\Users\{...}' }
-        { $_ -eq "downloads" -or $_ -eq "dl" } { Set-Location -Path 'C:\Users\{...}\Downloads' }
-        { $_ -eq "proper" } { Set-Location -Path 'C:\Users\{...}\projects' }
+        { $_ -eq "user" -or $_ -eq "home" } { Set-Location -Path "$HOME" }
+        { $_ -eq "downloads" -or $_ -eq "dl" } { Set-Location -Path "$HOME\Downloads" }
+        { $_ -eq "proper" } { Set-Location -Path "$HOME\projects" }
+        { $_ -eq "nvim" } { Set-Location -Path "$HOME\AppData\Local\nvim" } 
+        { $_ -eq "help" -or $_ -eq "h" -or $_ -eq "?" }
+            Write-Host "Recognised are: user/home, proper, dl/downloads, nvim." 
+        }
         default { 
-            Write-Host "Error: Folder not recognised." 
-            Write-Host "Recognised are: user/home, proper, dl/downloads." 
+            Write-Host "Error: Folder not recognised. Run 'fo help' for a list of recognised folders."
+            Write-Host "Attempting to run 'cd $args' instead..."
+            $ErrorActionPreference = 'SilentlyContinue'
+            Set-Location -Path $args[0] 
+            $ErrorActionPreference = 'Continue'
         }
     }
 }
@@ -506,16 +513,20 @@ function fo {
 # Allows opening files in VS Code e.g. 'fi ssh'
 function fi {
     switch ($args[0]) {
-        { $_ -eq "ssh" } { code 'C:\Users\{...}\.ssh\config' } 
-        { $_ -eq "aws" } { code 'C:\Users\{...}\.aws\config' } 
-        { $_ -eq "profile" } { code 'C:\Users\{...}\Documents\PowerShell\Microsoft.PowerShell_profile.ps1' } 
-        { $_ -eq "kim" } { code 'C:\Users\{...}\Documents\PowerShell\Scripts\kim.ps1' }
-        { $_ -eq "ahk" } { code 'C:\Users\{...}\Documents\AHK\shortcuts.ahk' }
-        { $_ -eq "komokey" } { code 'C:\Users\{...}\Documents\AHK\komorebi.ahk' }
-        { $_ -eq "komocon" } { code 'C:\Users\{...}\Documents\Komorebi\komorebi.json' } 
+        { $_ -eq "ssh" } { code "$HOME\.ssh\config" } 
+        { $_ -eq "aws" } { code "$HOME\.aws\config" } 
+        { $_ -eq "profile" -or $_ -eq "p" } { code "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" } 
+        { $_ -eq "kim" } { code "$HOME\Documents\PowerShell\Scripts\kim.ps1" }
+        { $_ -eq "ahk" } { code "$HOME\Documents\AHK\shortcuts.ahk" }
+        { $_ -eq "tridactyl" } { code "$HOME\.config\tridactyl\tridactlyrc" } 
+        { $_ -eq "komokey" } { code "$HOME\Documents\AHK\komorebi.ahk" }
+        { $_ -eq "komocon" } { code "$HOME\Documents\Komorebi\komorebi.json" }
+        { $_ -eq "komoapps" } { code "HOME\Documents\Komorebi\applications.json" } 
+        { $_ -eq "wezterm" } { code "$HOME\.wezterm.lua" } 
+        { $_ -eq "yazi" } { code "$HOME\AppData\Roaming\yazi\config\yazi.toml" } 
         default { 
             Write-Host "Error: File not recognised." 
-            Write-Host "Recognised files are ssh, aws, kim, profile."
+            Write-Host "Recognised files are ssh, aws, p/profile, kim, tridactyl, komokey, komocon, komoapps, wezterm, yazi."
         }
     }
 }
