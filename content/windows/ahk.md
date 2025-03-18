@@ -24,7 +24,7 @@ toc: false
 #+q:: PostMessage 0x112, 0xF060, , , "A"
 
 ; Win + O => Obsidian
-#o::WinExist("ahk_exe Obsidian.exe") ? WinActivate() : Run("C:\Users\{...}\AppData\Local\Obsidian\Obsidian.exe")
+#o::WinExist("ahk_exe Obsidian.exe") ? WinActivate() : Run("$HOME\AppData\Local\Obsidian\Obsidian.exe")
 
 ; Win + M => Explorer
 #m::WinExist('ahk_class CabinetWClass') ? WinActivate() : Run('explorer')
@@ -32,6 +32,10 @@ toc: false
 ; Win + T => Terminal
 ; #t::WinExist("ahk_exe WindowsTerminal.exe") ? WinActivate() : Run("wt")
 #t:: WinExist("ahk_exe wezterm-gui.exe") ? WinActivate() : Run("wezterm-gui.exe")
+
+; Win + Y => Open Yazi
+; #y:: Run('wt.exe -d ./../.. -- yazi')
+#y:: Run('wezterm-gui.exe start --cwd ./../.. yazi')
 
 ; Win + Shift + T => Terminal as admin
 #+t:: Run("*RunAs wezterm-gui.exe")
@@ -42,20 +46,17 @@ toc: false
 ; Win + J => JetBrains Toolbox
 #j::WinExist("ahk_exe jetbrains-toolbox.exe") ? WinActivate() : MsgBox("JetBrains Toolbox isn't visible but may be running. Opening the minimised window has not been implemented yet.", "Cannot open JetBrains Toolbox")
 
-; Win + W => JetBrains Webstorm
-#w::WinExist("ahk_exe webstorm64.exe") ? WinActivate() : Run("C:\Users\{...}\AppData\Local\Programs\WebStorm\bin\webstorm64.exe")
-
 ; Win + I => JetBrains IntelliJ
-#i::WinExist("ahk_exe idea64.exe") ? WinActivate() : Run("C:\Users\{...}\AppData\Local\Programs\IntelliJ IDEA Ultimate\bin\idea64.exe")
+#i::WinExist("ahk_exe idea64.exe") ? WinActivate() : Run("$HOME\AppData\Local\Programs\IntelliJ IDEA Ultimate\bin\idea64.exe")
 
 ; Win + C => VS Code
-#c:: WinExist("ahk_exe Code.exe") ? WinActivate() : Run("C:\Users\{...}\AppData\Local\Programs\Microsoft VS Code\Code.exe")
+#c:: WinExist("ahk_exe Code.exe") ? WinActivate() : Run("$HOME\AppData\Local\Programs\Microsoft VS Code\Code.exe")
 
 ; Win + A => Aseprite
 #a:: WinExist("ahk_exe Aseprite.exe") ? WinActivate() : Run("C:\Program Files\Aseprite\Aseprite.exe")
 
 ; Win + P => Postman
-#p:: WinExist("ahk_exe Postman.exe") ? WinActivate() : Run("C:\Users\{...}\AppData\Local\Postman\Postman.exe")
+#p:: WinExist("ahk_exe Postman.exe") ? WinActivate() : Run("$HOME\AppData\Local\Postman\Postman.exe")
 
 ; Win + S = Window Spy
 #w::Run("C:\ProgramData\chocolatey\lib\autohotkey.portable\tools\AutoHotkey.exe C:\ProgramData\chocolatey\lib\autohotkey.portable\tools\UX\WindowSpy.ahk")
