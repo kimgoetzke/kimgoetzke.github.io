@@ -282,7 +282,7 @@ function GenerateUlid {
 
 # TODO: Change path accordingly
 function FixPackageJsonPortsNames {
-    Write-Host "Action: $function - Recursively searches through a repo for package.json files and replaces all occurrences of '-p `${PORT:=3000}' with '-p 3000'."
+    Write-Host "Action: $function - recursively searches through a repo for package.json files and replaces all occurrences of '-p `${PORT:=3000}' with '-p 3000'."
     Write-Host "Fetching files..."
     $files = Get-ChildItem -Path "C:\path\to\repo" -Filter 'package.json' -Recurse -File
     foreach ($file in $files) {
@@ -315,7 +315,7 @@ function DecodeBase64EncodedString {
 }
 
 function EncodeStringAsBase64 {
-    Write-Host "Action:"$function - encodes, prints, and copies a string as base64 to your clipboard."
+    Write-Host "Action: $function - encodes, prints, and copies a string as base64 to your clipboard."
     $string = $arg
     if ($string -eq [string]::empty -or $string -eq $null) {
         Write-Host "No string provided."
