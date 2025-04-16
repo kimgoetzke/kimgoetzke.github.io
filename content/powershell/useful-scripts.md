@@ -189,15 +189,6 @@ function GetProcessInfo {
     }
 }
 
-function ReloadKomorebi {
-    Write-Host "Action: $function - stops and re-starts Komorebi."
-    komorebic.exe stop
-    Write-Host "Waiting to re-start Komorebi..."
-    Start-Sleep -Seconds 1
-    komorebic.exe start --config "$Env:KOMOREBI_CONFIG_HOME\komorebi.json"
-    Write-Host "Please reload the AHK script containing your Komorebi shortcuts..."
-}
-
 function GenerateUlidSilently {
     $ulid_encoding = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
     $ulid_encoding_length = $ulid_encoding.Length
@@ -221,18 +212,20 @@ function GenerateUlidSilently {
     Set-Clipboard -Value $ulid
 }
 
+# TODO: Change path/version accordingly and keep up-to-date
 function SwitchTo-Java17 {
     Write-Host "Action: $function - switches to specified Java version."
-    $Env:JAVA_HOME="C:\Program Files (x86)\Eclipse Adoptium\jdk-17.0.11.9-hotspot" # Change accordingly
+    $Env:JAVA_HOME="C:\Program Files (x86)\Eclipse Adoptium\jdk-17.0.14.7-hotspot"
     $Env:Path="$Env:JAVA_HOME\bin;$Env:Path"
     Write-Host "Java Adoptium Temurin 17 activated."
 }
 
-function SwitchTo-Java19 {
-    Write-Host "Action: $function - switches to specified Java version."
-    $Env:JAVA_HOME="C:\Program Files (x86)\Eclipse Adoptium\jdk-19.0.2.7-hotspot\" # Change accordingly
+# TODO: Change path/version accordingly and keep up-to-date
+function SwitchTo-Java21 {
+    Write-Host "Action: "$function" - switches to specified Java version."
+    $Env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-21.0.6.7-hotspot\"
     $Env:Path="$Env:JAVA_HOME\bin;$Env:Path" 
-    Write-Host "Java Adoptium Temurin 19 activated."
+    Write-Host "Java Adoptium Temurin 21 activated."
 }
 
 function ToggleGradleInitFile {
@@ -287,6 +280,7 @@ function GenerateUlid {
     Write-Host "ULID ($ulid) copied to clipboard."
 }
 
+# TODO: Change path accordingly
 function FixPackageJsonPortsNames {
     Write-Host "Action: $function - Recursively searches through a repo for package.json files and replaces all occurrences of '-p `${PORT:=3000}' with '-p 3000'."
     Write-Host "Fetching files..."
@@ -392,10 +386,9 @@ function Help {
     Write-Host "where      : Find path of an executable"
     Write-Host "gp         : Get TCP connections (for port specified)"
     Write-Host "pr         : Get process information for a given PID"
-    Write-Host "komoreload : Stops and starts komorebi to reload configuration"
     Write-Host "[ Java ]"
     Write-Host "j17        : Switch to Java Temurin 17"
-    Write-Host "j19        : Switch to Java Temurin 19"
+    Write-Host "j21        : Switch to Java Temurin 21"
     Write-Host "ginit      : Set Gradle init file to active or inactive"
     Write-Host "[ Security ]"
     Write-Host "decb64     : Decodes and prints a base64 encoded string (use with base64 string as argument)"
@@ -421,11 +414,10 @@ function ExecuteParameter($function, $arg) {
         {$_ -eq "mid"} { GetMysqlDockerContainerId }
         {$_ -eq "mc"} { ExecuteCommandInMySqlContainer($arg) }
         {$_ -eq "j17"} { SwitchTo-Java17 }
-        {$_ -eq "j19"} { SwitchTo-Java19 }
+        {$_ -eq "j21"} { SwitchTo-Java21 }
         {$_ -eq "gp"} { GetPortInfo }
         {$_ -eq "pr"} { GetProcessInfo }
         {$_ -eq "where"} { WhereIs($arg) }
-        {$_ -eq "komoreload"} { ReloadKomorebi }
         {$_ -eq "drcv" -or $_ -eq "drmcv"} { RemoveUnusedDockerContainersAndVolumes }
         {$_ -eq "drv" -or $_ -eq "drmv"} { RemoveUnusedDockerVolumes }
         {$_ -eq "dsrc"} { StopAndRemoveAllDockerContainers }
@@ -474,10 +466,6 @@ oh-my-posh init pwsh --config "$HOME\oh-my-posh\emodipt-kim.omp.json" | Invoke-E
 Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 Set-PSReadLineKeyHandler -Chord Ctrl+u -Function RevertLine
 
-# Komorebi
-#$Env:KOMOREBI_CONFIG_HOME = "$HOME\Documents\Komorebi"
-#komorebic-no-console.exe start --config "$HOME\Documents\Komorebi\komorebi.json"
-
 # App sortcuts
 Set-Alias -Name idea -Value "$HOME\AppData\Local\Programs\IntelliJ IDEA Ultimate\bin\idea64.exe"
 Set-Alias -Name webstorm -Value "$HOME\AppData\Local\Programs\WebStorm\bin\webstorm64.exe"
@@ -517,16 +505,12 @@ function fi {
         { $_ -eq "aws" } { code "$HOME\.aws\config" } 
         { $_ -eq "profile" -or $_ -eq "p" } { code "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" } 
         { $_ -eq "kim" } { code "$HOME\Documents\PowerShell\Scripts\kim.ps1" }
-        { $_ -eq "ahk" } { code "$HOME\Documents\AHK\shortcuts.ahk" }
         { $_ -eq "tridactyl" } { code "$HOME\.config\tridactyl\tridactlyrc" } 
-        { $_ -eq "komokey" } { code "$HOME\Documents\AHK\komorebi.ahk" }
-        { $_ -eq "komocon" } { code "$HOME\Documents\Komorebi\komorebi.json" }
-        { $_ -eq "komoapps" } { code "HOME\Documents\Komorebi\applications.json" } 
         { $_ -eq "wezterm" } { code "$HOME\.wezterm.lua" } 
         { $_ -eq "yazi" } { code "$HOME\AppData\Roaming\yazi\config\yazi.toml" } 
         default { 
             Write-Host "Error: File not recognised." 
-            Write-Host "Recognised files are ssh, aws, p/profile, kim, tridactyl, komokey, komocon, komoapps, wezterm, yazi."
+            Write-Host "Recognised files are ssh, aws, p/profile, kim, tridactyl, wezterm, yazi."
         }
     }
 }
