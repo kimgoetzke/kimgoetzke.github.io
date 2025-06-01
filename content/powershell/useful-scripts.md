@@ -460,22 +460,31 @@ the script with e.g. `kim ?` to display the available commands.
 ## Profile
 
 ```powershell
-# Initiates OMP styling
+# Initiate OMP styling
 oh-my-posh init pwsh --config "$HOME\oh-my-posh\emodipt-kim.omp.json" | Invoke-Expression
 
 # Set general PowerShell settings
-Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 Set-PSReadLineKeyHandler -Chord Ctrl+u -Function RevertLine
+Set-PSReadLineKeyHandler -Chord "Tab" -Function ForwardWord
 # Set-Location -Path "$HOME"
 $env:POWERSHELL_UPDATECHECK = 'Off'
 
 # Refresh Chocolatey profile (so that .$profile will refresh Chocolatey profile after a choco install)
 Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
 
+# Import the Chocolatey Profile
+# Be aware that if you are missing these lines from your profile, tab completion for `choco` will not function.
+# See https://ch0.co/tab-completion for details.
+$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+if (Test-Path($ChocolateyProfile)) {
+    Import-Module "$ChocolateyProfile"
+}
+
 # Initialise aliases
 Set-Alias -Name idea -Value "$HOME\AppData\Local\Programs\IntelliJ IDEA Ultimate\bin\idea64.exe"
 Set-Alias -Name webstorm -Value "$HOME\AppData\Local\Programs\WebStorm\bin\webstorm64.exe"
 Set-Alias -Name rider -Value "$HOME\AppData\Local\Programs\Rider\bin\rider64.exe"
+Set-Alias -Name rustrover -Value "$HOME\AppData\Local\Programs\RustRover\bin\rustrover64.exe"
 Set-Alias -Name vim -Value 'nvim'
 Set-Alias -Name c -Value clear
 Set-Alias -Name '..' -Value cd..
@@ -483,7 +492,7 @@ Set-Alias -Name '...' -Value cd.. ; cd..
 Set-Alias -Name '....' -Value cd.. ; cd.. ; cd..
 Set-Alias -Name '.....' -Value cd.. ; cd.. ; cd.. ; cd..
 
-# Initialise folder shortcuts
+# Enable folder shortcuts
 function fo {
     switch ($args[0]) {
         { $_ -eq "user" -or $_ -eq "home" } { Set-Location -Path "$HOME" }
@@ -504,7 +513,7 @@ function fo {
 }
 
 
-# Allows opening files in VS Code e.g. 'fi ssh'
+# Allow opening files in VS Code e.g. 'fi ssh'
 function fi {
     switch ($args[0]) {
         { $_ -eq "ssh" } { code "$HOME\.ssh\config" } 
