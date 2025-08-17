@@ -466,6 +466,12 @@ oh-my-posh init pwsh --config "$HOME\oh-my-posh\emodipt-kim.omp.json" | Invoke-E
 # Set general PowerShell settings
 Set-PSReadLineKeyHandler -Chord Ctrl+u -Function RevertLine
 Set-PSReadLineKeyHandler -Chord "Tab" -Function ForwardWord
+Set-PSReadLineOption -Colors @{
+    Command = "`e[38;2;136;192;208m"     # Nord8
+    Parameter = "`e[38;2;129;161;193m"   # Nord9
+    String = "`e[38;2;235;203;139m"      # Nord13
+    Variable = "`e[38;2;163;190;140m"    # Nord14
+}
 # Set-Location -Path "$HOME"
 $env:POWERSHELL_UPDATECHECK = 'Off'
 
