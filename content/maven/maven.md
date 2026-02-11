@@ -7,6 +7,16 @@ tags: [ "Maven", "Java", "Build tool & automation" ]
 toc: false
 ---
 
+## Make `mvnw` executable
+
+If you are using the Maven Wrapper, you need to make sure that the `mvnw` file is executable. However, if you use
+Windows, the executable bit may not be set by default when you create a new repository. In this case, you can use the
+following to fix the issue:
+
+```shell
+git update-index --chmod=+x mvnw
+```
+
 ## Auto-configure client-side Git hooks running a formatter
 
 You can use [Git Build Hook Maven Plugin](https://github.com/rudikershaw/git-build-hook) to configure a goal that
