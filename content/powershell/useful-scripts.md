@@ -215,7 +215,7 @@ function GenerateUlidSilently {
 # TODO: Change path/version accordingly and keep up-to-date
 function SwitchTo-Java17 {
     Write-Host "Action: $function - switches to specified Java version."
-    $Env:JAVA_HOME="C:\Program Files (x86)\Eclipse Adoptium\jdk-17.0.14.7-hotspot"
+    $Env:JAVA_HOME="C:\Program Files (x86)\Eclipse Adoptium\jdk-17.0.17.10-hotspot"
     $Env:Path="$Env:JAVA_HOME\bin;$Env:Path"
     Write-Host "Java Adoptium Temurin 17 activated."
 }
@@ -223,7 +223,7 @@ function SwitchTo-Java17 {
 # TODO: Change path/version accordingly and keep up-to-date
 function SwitchTo-Java21 {
     Write-Host "Action: "$function" - switches to specified Java version."
-    $Env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-21.0.6.7-hotspot\"
+    $Env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-21.0.8.9-hotspot\"
     $Env:Path="$Env:JAVA_HOME\bin;$Env:Path" 
     Write-Host "Java Adoptium Temurin 21 activated."
 }
@@ -472,8 +472,17 @@ Set-PSReadLineOption -Colors @{
     String = "`e[38;2;235;203;139m"      # Nord13
     Variable = "`e[38;2;163;190;140m"    # Nord14
 }
-# Set-Location -Path "$HOME"
 $env:POWERSHELL_UPDATECHECK = 'Off'
+
+# JetBrains sets the working directory via -WorkingDirectory but PowerShell sometimes ignores it.
+# This ensures we stay where JetBrains put us, assuming that you start the terminal in the IDE with:
+# cmd /c "set JETBRAINS_TERMINAL=1 & pwsh"
+if ($env:JETBRAINS_TERMINAL) {
+    return
+}
+
+# Set starting location to home directory (instead of e.g. C:\)
+Set-Location -Path "$HOME"
 
 # Refresh Chocolatey profile (so that .$profile will refresh Chocolatey profile after a choco install)
 Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
@@ -503,10 +512,11 @@ function fo {
     switch ($args[0]) {
         { $_ -eq "user" -or $_ -eq "home" } { Set-Location -Path "$HOME" }
         { $_ -eq "downloads" -or $_ -eq "dl" } { Set-Location -Path "$HOME\Downloads" }
-        { $_ -eq "proper" } { Set-Location -Path "$HOME\projects" }
-        { $_ -eq "nvim" } { Set-Location -Path "$HOME\AppData\Local\nvim" } 
+        { $_ -eq "prop" } { Set-Location -Path "$HOME\projects" }
+        { $_ -eq "nvim" } { Set-Location -Path "$HOME\AppData\Local\nvim" }
+        { $_ -eq "yazi" } { Set-Location -Path "$HOME\AppData\Roaming\yazi\config" }
         { $_ -eq "help" -or $_ -eq "h" -or $_ -eq "?" }
-            Write-Host "Recognised are: user/home, proper, dl/downloads, nvim." 
+            Write-Host "Recognised are: user/home, proper, dl/downloads, nvim, yazi." 
         }
         default { 
             Write-Host "Error: Folder not recognised. Run 'fo help' for a list of recognised folders."
