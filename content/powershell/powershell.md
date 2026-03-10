@@ -1,33 +1,11 @@
 ---
-title: Terminal & PowerShell
+title: PowerShell
 draft: false
 date: 2023-03-17
 series: [ "Powershell" ]
-tags: [ Windows, Terminal, PowerShell ]
+tags: [ Windows, PowerShell ]
 toc: true
 ---
-
-## Remember
-
-- [Windows Terminal documentation](https://learn.microsoft.com/en-us/windows/terminal/install)
-- Use `CTRL` + `Space` to show "MenuComplete" i.e. available options based on the input provided so far
-- Use `Arrow key (right)` for basic auto-complete
-- Set up advanced auto-complete -
-  see [this article](https://techcommunity.microsoft.com/t5/itops-talk-blog/autocomplete-in-powershell/ba-p/2604524)
-- Toggle command history with `F2`
-
-## Customise Windows Terminal default layout
-
-1. Create a desktop shortcut
-2. Set the target as `C:\Users\[Username]\AppData\Local\Microsoft\WindowsApps\wt.exe`
-3. Append any customisations to the above target, e.g. ` -p "PowerShell 7 (x86)" ; split-pane -H -p "Ubuntu"` to open
-   with two horizontal panes with Powershell and Bash
-4. Add a keyboard shortcut and/or select `Open as Administrator` if you want
-
-## Autostart Windows Terminal with Powershell in quake mode
-
-1. Hit `Win` + `R` and type `shell:startup` to open the `Startup` folder
-2. Create a shortcut with the target `"C:\Program Files\PowerShell\7\pwsh.exe" -WorkingDirectory ~ -Command wt -w _quake pwsh -window minimized`
 
 ## Basic commands
 
