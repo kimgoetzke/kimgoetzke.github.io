@@ -2,7 +2,7 @@
 title: Useful scripts
 date: 2023-05-23
 draft: false
-series: [ "Powershell" ]
+series: [ "PowerShell" ]
 tags: [ Windows, Terminal, PowerShell, Scripts, Starters ]
 toc: false
 ---

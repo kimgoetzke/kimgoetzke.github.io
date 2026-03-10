@@ -2,7 +2,7 @@
 title: Terminal
 draft: false
 date: 2023-03-17
-series: [ "Powershell" ]
+series: [ "PowerShell" ]
 tags: [ "Windows", "Terminal", "PowerShell", "Starters" ]
 toc: true
 ---
@@ -21,10 +21,10 @@ toc: true
 1. Create a desktop shortcut
 2. Set the target as `C:\Users\[Username]\AppData\Local\Microsoft\WindowsApps\wt.exe`
 3. Append any customisations to the above target, e.g. ` -p "PowerShell 7 (x86)" ; split-pane -H -p "Ubuntu"` to open
-   with two horizontal panes with Powershell and Bash
+   with two horizontal panes with PowerShell and Bash
 4. Add a keyboard shortcut and/or select `Open as Administrator` if you want
 
-## Autostart Windows Terminal with Powershell in quake mode
+## Autostart Windows Terminal with PowerShell in quake mode
 
 1. Hit `Win` + `R` and type `shell:startup` to open the `Startup` folder
 2. Create a shortcut with the target

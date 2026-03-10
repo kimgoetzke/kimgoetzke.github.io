@@ -2,8 +2,8 @@
 title: PowerShell
 draft: false
 date: 2023-03-17
-series: [ "Powershell" ]
-tags: [ Windows, PowerShell ]
+series: [ "PowerShell" ]
+tags: [ "Windows", "PowerShell" ]
 toc: true
 ---
 
@@ -130,7 +130,7 @@ Set-Variable
    [<CommonParameters>]
 ```
 
-### Working with your Powershell profile
+### Working with your PowerShell profile
 
 Open the profile:
 
