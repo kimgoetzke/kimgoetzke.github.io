@@ -3,7 +3,7 @@ title: Useful scripts
 date: 2023-05-23
 draft: false
 series: [ "Powershell" ]
-tags: [ Windows, Terminal, PowerShell, Scripts ]
+tags: [ Windows, Terminal, PowerShell, Scripts, Starters ]
 toc: false
 ---
 
@@ -546,7 +546,7 @@ function fi {
     }
 }
 
-# Set y as yazi shortcut and return to yazi directory in the terminal
+# Set y as Yazi shortcut and return to Yazi directory in the terminal
 function y {
     $tmp = [System.IO.Path]::GetTempFileName()
     yazi $args --cwd-file="$tmp"

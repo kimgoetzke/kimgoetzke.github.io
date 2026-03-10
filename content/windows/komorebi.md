@@ -2,7 +2,7 @@
 title: Komorebi
 date: 2024-07-07
 draft: false
-tags: [ "Komorebi", "Windows", "Scripts" ]
+tags: [ "Komorebi", "Windows", "Scripts", "Starters" ]
 toc: false
 ---
 

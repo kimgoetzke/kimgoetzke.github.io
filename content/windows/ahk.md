@@ -2,7 +2,7 @@
 title: AutoHotkey
 date: 2024-07-07
 draft: false
-tags: ["AHK", "Windows", "AutoHotkey", "Scripts"]
+tags: ["AHK", "Windows", "AutoHotkey", "Scripts", "Starters"]
 toc: false
 ---
 
