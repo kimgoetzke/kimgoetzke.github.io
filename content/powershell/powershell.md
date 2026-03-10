@@ -9,13 +9,13 @@ toc: true
 
 ## Basic commands
 
-### Check version of PowerShell
+### Find your PowerShell command history
 
 ```powershell
 (Get-PSReadlineOption).HistorySavePath
 ```
 
-### Find your PowerShell command history
+### Check version of PowerShell
 
 ```powershell
 $PSVersionTable
