@@ -4,7 +4,7 @@
     <div class="mb-5">
       <span class="tag is-normal is-rounded"><ion-icon name="calendar-outline"></ion-icon>&nbsp; {{ .Date.Format "2 Jan 2006" }}</span>
     </div>
-    <h6 class="subtitle has-text-grey is-6 mt-3">{{ .Summary | truncate 150 }}</h6>
+    <h6 class="subtitle has-text-grey is-6 mt-3">{{ .Summary | plainify | truncate 150 }}</h6>
     <div class="tags">
         
         {{ range .Params.tags }} 
