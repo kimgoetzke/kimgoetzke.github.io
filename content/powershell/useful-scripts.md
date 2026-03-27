@@ -472,12 +472,17 @@ Set-PSReadLineOption -Colors @{
     String = "`e[38;2;235;203;139m"      # Nord13
     Variable = "`e[38;2;163;190;140m"    # Nord14
 }
+
+# Disable PowerShell update warnings - may no longer work here; consider setting as an environment variable
 $env:POWERSHELL_UPDATECHECK = 'Off'
 
-# JetBrains sets the working directory via -WorkingDirectory but PowerShell sometimes ignores it.
-# This ensures we stay where JetBrains put us, assuming that you start the terminal in the IDE with:
-# cmd /c "set JETBRAINS_TERMINAL=1 & pwsh"
-if ($env:JETBRAINS_TERMINAL) {
+# Set preferred editor for file-opening shortcuts
+$PREFERRED_EDITOR = 'zed'
+
+# Some IDEs set the working directory via -WorkingDirectory but PowerShell sometimes ignores it.
+# This ensures we stay where the IDE puts us, assuming that you start the terminal in the IDE with:
+# cmd /c "set IDE_TERMINAL=1 & pwsh"
+if ($env:IDE_TERMINAL) {
     return
 }
 
@@ -529,16 +534,16 @@ function fo {
 }
 
 
-# Allow opening files in VS Code e.g. 'fi ssh'
+# Allow opening files in your $PREFERRED_EDITOR e.g. 'fi ssh'
 function fi {
     switch ($args[0]) {
-        { $_ -eq "ssh" } { code "$HOME\.ssh\config" } 
-        { $_ -eq "aws" } { code "$HOME\.aws\config" } 
-        { $_ -eq "profile" -or $_ -eq "p" } { code "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" } 
-        { $_ -eq "kim" } { code "$HOME\Documents\PowerShell\Scripts\kim.ps1" }
-        { $_ -eq "tridactyl" } { code "$HOME\.config\tridactyl\tridactlyrc" } 
-        { $_ -eq "wezterm" } { code "$HOME\.wezterm.lua" } 
-        { $_ -eq "yazi" } { code "$HOME\AppData\Roaming\yazi\config\yazi.toml" } 
+        { $_ -eq "ssh" } { & $PREFERRED_EDITOR "$HOME\.ssh\config" } 
+        { $_ -eq "aws" } { & $PREFERRED_EDITOR "$HOME\.aws\config" } 
+        { $_ -eq "profile" -or $_ -eq "p" } { & $PREFERRED_EDITOR "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" } 
+        { $_ -eq "kim" } { & $PREFERRED_EDITOR "$HOME\Documents\PowerShell\Scripts\kim.ps1" }
+        { $_ -eq "tridactyl" } { & $PREFERRED_EDITOR "$HOME\.config\tridactyl\tridactlyrc" } 
+        { $_ -eq "wezterm" } { & $PREFERRED_EDITOR "$HOME\.wezterm.lua" } 
+        { $_ -eq "yazi" } { & $PREFERRED_EDITOR "$HOME\AppData\Roaming\yazi\config\yazi.toml" } 
         default { 
             Write-Host "Error: File not recognised." 
             Write-Host "Recognised files are ssh, aws, p/profile, kim, tridactyl, wezterm, yazi."
