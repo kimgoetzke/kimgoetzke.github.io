@@ -164,7 +164,7 @@ toc: true
   "profiles": {
     "defaults": {
       "background": "#242933",
-      "colorScheme": "Nord",
+      "colorScheme": "Islands Dark",
       "font": {
         "face": "JetBrainsMono Nerd Font"
       },
@@ -184,7 +184,6 @@ toc: true
         "source": "Windows.Terminal.PowershellCore"
       },
       {
-        "colorScheme": "Campbell",
         "commandline": "\"C:\\Program Files\\PowerShell\\7\\pwsh.exe\"",
         "elevate": true,
         "guid": "{1ebf8aa5-8caa-4263-b752-b3fb715e60c2}",
@@ -195,6 +194,39 @@ toc: true
       }
     ]
   },
+  "schemes": [
+    {
+      "background": "#191A1C",
+      "black": "#191A1C",
+      "blue": "#56A8F5",
+      "brightBlack": "#393B40",
+      "brightBlue": "#56A8F5",
+      "brightCyan": "#2AACB8",
+      "brightGreen": "#6AAB73",
+      "brightPurple": "#C77DBB",
+      "brightRed": "#F75464",
+      "brightWhite": "#DFE1E5",
+      "brightYellow": "#E0BB65",
+      "cursorColor": "#BCBEC4",
+      "cyan": "#2AACB8",
+      "foreground": "#BCBEC4",
+      "green": "#6AAB73",
+      "name": "Islands Dark",
+      "purple": "#C77DBB",
+      "red": "#F75464",
+      "selectionBackground": "#2B2D30",
+      "white": "#BCBEC4",
+      "yellow": "#E0BB65"
+    }
+  ],
+  "themes": []
+}
+
+```
+
+Or with Nord theme colours:
+```json
+{
   "schemes": [
     {
       "background": "#242933",
@@ -219,8 +251,6 @@ toc: true
       "white": "#E5E9F0",
       "yellow": "#EBCB8B"
     }
-  ],
-  "themes": []
+  ]
 }
-
 ```

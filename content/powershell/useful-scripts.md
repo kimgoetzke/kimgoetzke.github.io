@@ -461,17 +461,23 @@ the script with e.g. `kim ?` to display the available commands.
 
 ```powershell
 # Initiate OMP styling
-oh-my-posh init pwsh --config "$HOME\oh-my-posh\emodipt-kim.omp.json" | Invoke-Expression
+oh-my-posh init pwsh --config "$HOME\.config\oh-my-posh\kim-dark-island.omp.json" | Invoke-Expression
 
 # Set general PowerShell settings
 Set-PSReadLineKeyHandler -Chord Ctrl+u -Function RevertLine
 Set-PSReadLineKeyHandler -Chord "Tab" -Function ForwardWord
 Set-PSReadLineOption -Colors @{
-    Command = "`e[38;2;136;192;208m"     # Nord8
-    Parameter = "`e[38;2;129;161;193m"   # Nord9
-    String = "`e[38;2;235;203;139m"      # Nord13
-    Variable = "`e[38;2;163;190;140m"    # Nord14
+    Command = "`e[38;2;86;168;245m"      # Dark Island blue/functions
+    Parameter = "`e[38;2;199;125;187m"   # Dark Island purple/constants
+    String = "`e[38;2;106;171;115m"      # Dark Island green/strings
+    Variable = "`e[38;2;207;142;109m"    # Dark Island orange/keywords
 }
+# Set-PSReadLineOption -Colors @{
+#     Command = "`e[38;2;136;192;208m"     # Nord8
+#     Parameter = "`e[38;2;129;161;193m"   # Nord9
+#     String = "`e[38;2;235;203;139m"      # Nord13
+#     Variable = "`e[38;2;163;190;140m"    # Nord14
+# }
 
 # Disable PowerShell update warnings - may no longer work here; consider setting as an environment variable
 $env:POWERSHELL_UPDATECHECK = 'Off'

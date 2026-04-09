@@ -182,22 +182,21 @@ My basic starter configuration. Not useful for anyone else.
   },
   "terminal": {
     "env": {
-      "JETBRAINS_TERMINAL": "1",
       "IDE_TERMINAL": "1",
     },
   },
   "experimental.theme_overrides": {
     "syntax": {
       "emphasis.strong": {
-        "color": "#ebcb8b",
+        "color": "#E0BB65",
         "font_weight": 500,
       },
       "emphasis": {
-        "color": "#ebcb8b",
+        "color": "#E0BB65",
         "font_style": "italic",
       },
       "punctuation.list_marker": {
-        "color": "#b48ead",
+        "color": "#C77DBB",
       },
     },
   },
