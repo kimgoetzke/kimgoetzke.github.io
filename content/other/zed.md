@@ -25,43 +25,43 @@ My basic starter configuration. Not useful for anyone else.
   {
     "context": "Workspace",
     "bindings": {
-      // "shift shift": "file_finder::Toggle"
-    }
+      "shift shift": "file_finder::Toggle",
+    },
   },
   {
     "context": "Editor && vim_mode == insert",
     "bindings": {
       // "j k": "vim::NormalBefore"
-    }
+    },
   },
   {
     "context": "Editor",
     "bindings": {
-      "ctrl-\\ ctrl-right": "pane::SplitRight"
-    }
+      "ctrl-\\ ctrl-right": "pane::SplitRight",
+    },
   },
   {
     "context": "Editor",
     "bindings": {
-      "ctrl-\\": null
-    }
+      "ctrl-\\": null,
+    },
   },
   {
     "context": "Editor",
     "bindings": {
-      "ctrl-\\ ctrl-d": "editor::DeleteLine"
-    }
+      "ctrl-\\ ctrl-d": "editor::DeleteLine",
+    },
   },
   {
     "bindings": {
-      "ctrl-alt-s": "zed::OpenSettings"
-    }
+      "ctrl-alt-s": "zed::OpenSettings",
+    },
   },
   {
     "context": "Editor",
     "bindings": {
-      "ctrl-\\ ctrl-g": "git::Blame"
-    }
+      "ctrl-\\ ctrl-g": "git::Blame",
+    },
   },
   {
     "context": "Editor",
@@ -69,46 +69,65 @@ My basic starter configuration. Not useful for anyone else.
       "ctrl-\\ ctrl-c": [
         "editor::ToggleComments",
         {
-          "advance_downwards": true
-        }
-      ]
-    }
+          "advance_downwards": true,
+        },
+      ],
+    },
   },
   {
     "context": "Editor",
     "bindings": {
-      "ctrl-\\ ctrl-r": "editor::Rename"
-    }
+      "ctrl-\\ ctrl-r": "editor::Rename",
+    },
   },
   {
     "context": "Editor",
     "bindings": {
-      "ctrl-\\ ctrl-f": "pane::RevealInProjectPanel"
-    }
+      "ctrl-\\ ctrl-f": "pane::RevealInProjectPanel",
+    },
   },
   {
     "context": "Pane",
     "bindings": {
-      "ctrl-\\ ctrl-s": "workspace::ToggleZoom"
-    }
+      "ctrl-\\ ctrl-s": "workspace::ToggleZoom",
+    },
   },
   {
     "bindings": {
       "ctrl-\\ ctrl-[": "workspace::ActivateNextPane",
       "ctrl-\\ ctrl-]": "workspace::ActivatePreviousPane",
-      "ctrl-\\ ctrl-=": "zed::ToggleFullScreen"
-    }
+      "ctrl-\\ ctrl-=": "zed::ToggleFullScreen",
+    },
   },
   {
     "context": "Workspace",
     "bindings": {
-      "ctrl-alt-shift-r": "task::Spawn"
-    }
+      "ctrl-alt-shift-r": "task::Spawn",
+    },
   },
   {
     "context": "Workspace",
     "unbind": {
-      "alt-shift-f10": "task::Spawn"
+      "alt-shift-f10": "task::Spawn",
+    },
+  },
+  {
+    "bindings": {
+      "ctrl-alt-}": "agent::Toggle"
+    }
+  },
+  {
+    "bindings": {
+      "alt-2": "notification_panel::Toggle"
+    }
+  },
+  {
+    "context": "Pane",
+    "unbind": {
+      "alt-2": [
+        "pane::ActivateItem",
+        1
+      ]
     }
   }
 ]
