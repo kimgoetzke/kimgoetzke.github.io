@@ -98,6 +98,18 @@ My basic starter configuration. Not useful for anyone else.
       "ctrl-\\ ctrl-]": "workspace::ActivatePreviousPane",
       "ctrl-\\ ctrl-=": "zed::ToggleFullScreen"
     }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "ctrl-alt-shift-r": "task::Spawn"
+    }
+  },
+  {
+    "context": "Workspace",
+    "unbind": {
+      "alt-shift-f10": "task::Spawn"
+    }
   }
 ]
 ```
