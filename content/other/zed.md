@@ -77,12 +77,6 @@ My basic starter configuration. Not useful for anyone else.
   {
     "context": "Editor",
     "bindings": {
-      "ctrl-\\ ctrl-r": "editor::Rename",
-    },
-  },
-  {
-    "context": "Editor",
-    "bindings": {
       "ctrl-\\ ctrl-f": "pane::RevealInProjectPanel",
     },
   },
@@ -113,20 +107,46 @@ My basic starter configuration. Not useful for anyone else.
   },
   {
     "bindings": {
-      "ctrl-alt-}": "agent::Toggle"
-    }
+      "ctrl-alt-}": "agent::Toggle",
+    },
   },
   {
     "bindings": {
-      "alt-2": "notification_panel::Toggle"
-    }
+      "alt-2": "notification_panel::Toggle",
+    },
   },
   {
     "context": "Pane",
     "unbind": {
-      "alt-2": [
-        "pane::ActivateItem",
-        1
+      "alt-2": ["pane::ActivateItem", 1],
+    },
+  },
+  {
+    "context": "ProjectPanel",
+    "bindings": {
+      "ctrl-\\ ctrl-r": "project_panel::Rename"
+    }
+  },
+  {
+    "context": "ProjectPanel",
+    "unbind": {
+      "shift-f6": "project_panel::Rename"
+    }
+  },
+  {
+    "context": "Editor",
+    "bindings": {
+      "ctrl-\\ ctrl-r": "editor::Rename"
+    }
+  },
+  {
+    "context": "Workspace",
+    "unbind": {
+      "ctrl-r": [
+        "projects::OpenRecent",
+        {
+          "create_new_window": false
+        }
       ]
     }
   }
