@@ -111,11 +111,6 @@ My basic starter configuration. Not useful for anyone else.
     },
   },
   {
-    "bindings": {
-      "alt-2": "notification_panel::Toggle",
-    },
-  },
-  {
     "context": "Pane",
     "unbind": {
       "alt-2": ["pane::ActivateItem", 1],
@@ -124,20 +119,20 @@ My basic starter configuration. Not useful for anyone else.
   {
     "context": "ProjectPanel",
     "bindings": {
-      "ctrl-\\ ctrl-r": "project_panel::Rename"
-    }
+      "ctrl-\\ ctrl-r": "project_panel::Rename",
+    },
   },
   {
     "context": "ProjectPanel",
     "unbind": {
-      "shift-f6": "project_panel::Rename"
-    }
+      "shift-f6": "project_panel::Rename",
+    },
   },
   {
     "context": "Editor",
     "bindings": {
-      "ctrl-\\ ctrl-r": "editor::Rename"
-    }
+      "ctrl-\\ ctrl-r": "editor::Rename",
+    },
   },
   {
     "context": "Workspace",
@@ -145,12 +140,18 @@ My basic starter configuration. Not useful for anyone else.
       "ctrl-r": [
         "projects::OpenRecent",
         {
-          "create_new_window": false
-        }
-      ]
+          "create_new_window": false,
+        },
+      ],
+    },
+  },
+  {
+    "bindings": {
+      "ctrl-\\ ctrl-q": "editor::CopyPermalinkToLine"
     }
   }
 ]
+
 ```
 
 ### settings.json
