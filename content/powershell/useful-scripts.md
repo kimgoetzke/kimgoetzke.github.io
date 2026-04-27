@@ -506,13 +506,20 @@ if (Test-Path($ChocolateyProfile)) {
     Import-Module "$ChocolateyProfile"
 }
 
-# Initialise aliases
+# Alias: git pull
+function Invoke-GitPull
+{
+    & git pull @args
+}
+Set-Alias -Name gp -Value Invoke-GitPull -Option AllScope -Force
+
+# Miscellaneous aliases
+Set-Alias -Name c -Value clear
+Set-Alias -Name vim -Value 'nvim'
 Set-Alias -Name idea -Value "$HOME\AppData\Local\Programs\IntelliJ IDEA Ultimate\bin\idea64.exe"
 Set-Alias -Name webstorm -Value "$HOME\AppData\Local\Programs\WebStorm\bin\webstorm64.exe"
 Set-Alias -Name rider -Value "$HOME\AppData\Local\Programs\Rider\bin\rider64.exe"
 Set-Alias -Name rustrover -Value "$HOME\AppData\Local\Programs\RustRover\bin\rustrover64.exe"
-Set-Alias -Name vim -Value 'nvim'
-Set-Alias -Name c -Value clear
 Set-Alias -Name '..' -Value cd..
 Set-Alias -Name '...' -Value cd.. ; cd..
 Set-Alias -Name '....' -Value cd.. ; cd.. ; cd..
@@ -526,8 +533,10 @@ function fo {
         { $_ -eq "prop" } { Set-Location -Path "$HOME\projects" }
         { $_ -eq "nvim" } { Set-Location -Path "$HOME\AppData\Local\nvim" }
         { $_ -eq "yazi" } { Set-Location -Path "$HOME\AppData\Roaming\yazi\config" }
+        { $_ -eq "claude" } { Set-Location -Path "$HOME\.claude" }
+        { $_ -eq "copilot" } { Set-Location -Path "$HOME\.copilot" }
         { $_ -eq "help" -or $_ -eq "h" -or $_ -eq "?" }
-            Write-Host "Recognised are: user/home, proper, dl/downloads, nvim, yazi." 
+            Write-Host "Recognised are: user/home, proper, dl/downloads, nvim, yazi, claude, copilot." 
         }
         default { 
             Write-Host "Error: Folder not recognised. Run 'fo help' for a list of recognised folders."

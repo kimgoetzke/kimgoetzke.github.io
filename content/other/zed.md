@@ -151,7 +151,6 @@ My basic starter configuration. Not useful for anyone else.
     }
   }
 ]
-
 ```
 
 ### settings.json
@@ -166,6 +165,7 @@ My basic starter configuration. Not useful for anyone else.
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "cli_default_open_behavior": "new_window",
   "agent_servers": {
     "claude-acp": {
       "type": "registry"
