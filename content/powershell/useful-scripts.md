@@ -472,12 +472,31 @@ Set-PSReadLineOption -Colors @{
     String = "`e[38;2;106;171;115m"      # Dark Island green/strings
     Variable = "`e[38;2;207;142;109m"    # Dark Island orange/keywords
 }
-# Set-PSReadLineOption -Colors @{
-#     Command = "`e[38;2;136;192;208m"     # Nord8
-#     Parameter = "`e[38;2;129;161;193m"   # Nord9
-#     String = "`e[38;2;235;203;139m"      # Nord13
-#     Variable = "`e[38;2;163;190;140m"    # Nord14
-# }
+
+# Aliases: git
+function Invoke-GitPull
+{
+    & git pull @args
+}
+Set-Alias -Name gp -Value Invoke-GitPull -Option AllScope -Force
+function Invoke-GitCheckoutDefault
+{
+    & git show-ref --verify --quiet refs/heads/main
+    if ($LASTEXITCODE -eq 0)
+    {
+        & git checkout main
+    } else
+    {
+        & git checkout master
+    }
+}
+Set-Alias -Name gcd -Value Invoke-GitCheckoutDefault -Option AllScope -Force
+function Invoke-GitBranch
+{
+    & git branch -a
+}
+Set-Alias -Name gb -Value Invoke-GitBranch -Option AllScope -Force
+
 
 # Disable PowerShell update warnings - may no longer work here; consider setting as an environment variable
 $env:POWERSHELL_UPDATECHECK = 'Off'
@@ -505,13 +524,6 @@ $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 if (Test-Path($ChocolateyProfile)) {
     Import-Module "$ChocolateyProfile"
 }
-
-# Alias: git pull
-function Invoke-GitPull
-{
-    & git pull @args
-}
-Set-Alias -Name gp -Value Invoke-GitPull -Option AllScope -Force
 
 # Miscellaneous aliases
 Set-Alias -Name c -Value clear
