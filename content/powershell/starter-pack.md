@@ -1,13 +1,13 @@
 ---
-title: Useful scripts
+title: Starter pack
 date: 2023-05-23
 draft: false
 series: [ "PowerShell" ]
 tags: [ Windows, Terminal, PowerShell, Scripts, Starters ]
-toc: false
+toc: true
 ---
 
-## Little helper script
+## kim.ps1
 
 ```powershell
 #! /usr/bin/pwsh
@@ -400,7 +400,7 @@ function Help {
     Write-Host "uuid       : Generate a random UUID"
     Write-Host "ulid       : Generate a random ULID"
     Write-Host "ulids      : Generate a random ULID silently i.e only copy to clipboard"
-    Write-Host "fixfe      : Recursively searches for package.json files in a repo and makes ports Powershell syntax compatible"
+    Write-Host "fixports   : Recursively searches for package.json files in a repo and makes ports Powershell syntax compatible"
     Write-Host "?          : Show this list of parameters"
 }
 
@@ -426,7 +426,7 @@ function ExecuteParameter($function, $arg) {
         {$_ -eq "ulid"} { GenerateUlid }
         {$_ -eq "ulids"} { GenerateUlidSilently }
         {$_ -eq "ginit"} { ToggleGradleInitFile }
-        {$_ -eq "fixfe"} { FixPackageJsonPortsNames }
+        {$_ -eq "fixports"} { FixPackageJsonPortsNames }
         {$_ -eq "encb64"} { EncodeStringAsBase64($arg) }
         {$_ -eq "decb64"} { DecodeBase64EncodedString($arg) }
         {$_ -eq "deccertpem"} { DecodeCertificatePemFile($arg) }
@@ -542,13 +542,14 @@ function fo {
     switch ($args[0]) {
         { $_ -eq "user" -or $_ -eq "home" } { Set-Location -Path "$HOME" }
         { $_ -eq "downloads" -or $_ -eq "dl" } { Set-Location -Path "$HOME\Downloads" }
-        { $_ -eq "prop" } { Set-Location -Path "$HOME\projects" }
+        { $_ -eq "pro" } { Set-Location -Path "$HOME\projects" }
         { $_ -eq "nvim" } { Set-Location -Path "$HOME\AppData\Local\nvim" }
         { $_ -eq "yazi" } { Set-Location -Path "$HOME\AppData\Roaming\yazi\config" }
+        { $_ -eq "pi" } { Set-Location -Path "$HOME\.pi\agent" }
         { $_ -eq "claude" } { Set-Location -Path "$HOME\.claude" }
         { $_ -eq "copilot" } { Set-Location -Path "$HOME\.copilot" }
         { $_ -eq "help" -or $_ -eq "h" -or $_ -eq "?" }
-            Write-Host "Recognised are: user/home, proper, dl/downloads, nvim, yazi, claude, copilot." 
+            Write-Host "Recognised are: user/home, dl/downloads, pro, nvim, yazi, pi, claude, copilot." 
         }
         default { 
             Write-Host "Error: Folder not recognised. Run 'fo help' for a list of recognised folders."
