@@ -473,7 +473,30 @@ Set-PSReadLineOption -Colors @{
     Variable = "`e[38;2;207;142;109m"    # Dark Island orange/keywords
 }
 
-# Aliases: git
+# Disable PowerShell update warnings - may no longer work here; consider setting as an environment variable
+$env:POWERSHELL_UPDATECHECK = 'Off'
+
+# Set preferred editor for file-opening shortcuts (used by function fi below)
+$PREFERRED_EDITOR = 'zed'
+
+# Some IDEs set the working directory via -WorkingDirectory but PowerShell sometimes ignores it.
+# This ensures we stay where the IDE puts us, assuming that you start the terminal in the IDE with:
+# cmd /c "set IDE_TERMINAL=1 & pwsh"
+# if ($env:IDE_TERMINAL) {
+#     return
+# }
+
+# Refresh Chocolatey profile (so that .$profile will refresh Chocolatey profile after a choco install)
+Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+
+# Import the Chocolatey Profile
+# Be aware that if you are missing these lines from your profile, tab completion for `choco` will not function. See https://ch0.co/tab-completion for details.
+$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+if (Test-Path($ChocolateyProfile)) {
+    Import-Module "$ChocolateyProfile"
+}
+
+# Aliases for git
 function Invoke-GitPull
 {
     & git pull @args
@@ -497,34 +520,6 @@ function Invoke-GitBranch
 }
 Set-Alias -Name gb -Value Invoke-GitBranch -Option AllScope -Force
 
-
-# Disable PowerShell update warnings - may no longer work here; consider setting as an environment variable
-$env:POWERSHELL_UPDATECHECK = 'Off'
-
-# Set preferred editor for file-opening shortcuts
-$PREFERRED_EDITOR = 'zed'
-
-# Some IDEs set the working directory via -WorkingDirectory but PowerShell sometimes ignores it.
-# This ensures we stay where the IDE puts us, assuming that you start the terminal in the IDE with:
-# cmd /c "set IDE_TERMINAL=1 & pwsh"
-if ($env:IDE_TERMINAL) {
-    return
-}
-
-# Set starting location to home directory (instead of e.g. C:\)
-Set-Location -Path "$HOME"
-
-# Refresh Chocolatey profile (so that .$profile will refresh Chocolatey profile after a choco install)
-Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
-
-# Import the Chocolatey Profile
-# Be aware that if you are missing these lines from your profile, tab completion for `choco` will not function.
-# See https://ch0.co/tab-completion for details.
-$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-if (Test-Path($ChocolateyProfile)) {
-    Import-Module "$ChocolateyProfile"
-}
-
 # Miscellaneous aliases
 Set-Alias -Name c -Value clear
 Set-Alias -Name vim -Value 'nvim'
@@ -533,9 +528,9 @@ Set-Alias -Name webstorm -Value "$HOME\AppData\Local\Programs\WebStorm\bin\webst
 Set-Alias -Name rider -Value "$HOME\AppData\Local\Programs\Rider\bin\rider64.exe"
 Set-Alias -Name rustrover -Value "$HOME\AppData\Local\Programs\RustRover\bin\rustrover64.exe"
 Set-Alias -Name '..' -Value cd..
-Set-Alias -Name '...' -Value cd.. ; cd..
-Set-Alias -Name '....' -Value cd.. ; cd.. ; cd..
-Set-Alias -Name '.....' -Value cd.. ; cd.. ; cd.. ; cd..
+function ... { Set-Location -Path ..\.. }
+function .... { Set-Location -Path ..\..\.. }
+function ..... { Set-Location -Path ..\..\..\.. }
 
 # Enable folder shortcuts
 function fo {
@@ -589,4 +584,52 @@ function y {
     }
     Remove-Item -Path $tmp
 }
+
+# Review or explain a GitHub pull request from anywhere
+function pr
+{
+    param([string]$Url, [string]$Mode)
+    if (-not $Url -or -not $Mode)
+    {
+        Write-Host "Error: Usage is pr {pull request URL} {review|explain}."
+        return
+    }
+    if ($Mode -ne "review" -and $Mode -ne "explain")
+    {
+        Write-Host "Error: Mode must be 'review' or 'explain', not '$Mode'."
+        return
+    }
+    if ($Url -notmatch "github\.com/([^/]+)/([^/]+)/pull/(\d+)")
+    {
+        Write-Host "Error: Not a GitHub pull request URL: $Url"
+        return
+    }
+    $owner = $Matches[1]
+    $repository = $Matches[2]
+    $number = $Matches[3]
+    $path = $null
+    foreach ($root in @("$HOME\projects", "$HOME\projects-personal"))
+    {
+        if (Test-Path -Path "$root\$repository")
+        {
+            $path = "$root\$repository"
+            break
+        }
+    }
+    if (-not $path)
+    {
+        $path = "$HOME\projects\$repository"
+        Write-Host "Cloning $owner/$repository into $path..."
+        & gh repo clone "$owner/$repository" $path
+        if ($LASTEXITCODE -ne 0)
+        {
+            Write-Host "Error: Could not clone $owner/$repository."
+            return
+        }
+    }
+    Set-Location -Path $path
+    & git fetch --quiet origin
+    & claude "/$Mode-pr $number"
+}
+
 ```
