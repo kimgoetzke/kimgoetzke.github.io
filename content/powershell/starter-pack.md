@@ -370,6 +370,12 @@ function DecodePrivateKeyPemFile {
     }
 }
 
+function UpdateAllRepositories($excludedRepositories) {
+    Write-Host "Action: "$function" - checks out the default branch and pulls, for every repository."
+    # Full path, because a bare 'bash' can resolve to the WSL shim instead of Git Bash
+    & "$env:ProgramFiles\Git\bin\bash.exe" "$HOME\Documents\PowerShell\Scripts\update-repos.sh" @excludedRepositories
+}
+
 function Help {
     Write-Host "Action: $function - lists available commands."
     Write-Host "[ Docker ]"
@@ -401,6 +407,7 @@ function Help {
     Write-Host "ulid       : Generate a random ULID"
     Write-Host "ulids      : Generate a random ULID silently i.e only copy to clipboard"
     Write-Host "fixports   : Recursively searches for package.json files in a repo and makes ports Powershell syntax compatible"
+    Write-Host "ur         : Update all repositories i.e. check out the default branch and pull (arguments are repository names to skip)"
     Write-Host "?          : Show this list of parameters"
 }
 
@@ -433,6 +440,7 @@ function ExecuteParameter($function, $arg) {
         {$_ -eq "deccertstr"} { DecodeCertificateString($arg) }
         {$_ -eq "deckeypem"} { DecodePrivateKeyPemFile($arg) }
         {$_ -eq "infv"} { CopyInfraVariablesToClipboard }
+        {$_ -eq "ur"} { UpdateAllRepositories($remainingArgs) }
         {$_ -eq "?" -or $_ -eq "help"} { Help }
         default { Write-Host "Error: Invalid parameter. No action taken."; break }
     }
@@ -496,7 +504,7 @@ if (Test-Path($ChocolateyProfile)) {
     Import-Module "$ChocolateyProfile"
 }
 
-# Aliases for git
+# Declare aliases for git
 function Invoke-GitPull
 {
     & git pull @args
@@ -520,7 +528,7 @@ function Invoke-GitBranch
 }
 Set-Alias -Name gb -Value Invoke-GitBranch -Option AllScope -Force
 
-# Miscellaneous aliases
+# Set miscellaneous aliases
 Set-Alias -Name c -Value clear
 Set-Alias -Name vim -Value 'nvim'
 Set-Alias -Name idea -Value "$HOME\AppData\Local\Programs\IntelliJ IDEA Ultimate\bin\idea64.exe"
@@ -542,9 +550,8 @@ function fo {
         { $_ -eq "yazi" } { Set-Location -Path "$HOME\AppData\Roaming\yazi\config" }
         { $_ -eq "pi" } { Set-Location -Path "$HOME\.pi\agent" }
         { $_ -eq "claude" } { Set-Location -Path "$HOME\.claude" }
-        { $_ -eq "copilot" } { Set-Location -Path "$HOME\.copilot" }
         { $_ -eq "help" -or $_ -eq "h" -or $_ -eq "?" }
-            Write-Host "Recognised are: user/home, dl/downloads, pro, nvim, yazi, pi, claude, copilot." 
+            Write-Host "Recognised are: user/home, dl/downloads, pro, nvim, yazi, pi, claude." 
         }
         default { 
             Write-Host "Error: Folder not recognised. Run 'fo help' for a list of recognised folders."
@@ -608,7 +615,7 @@ function pr
     $repository = $Matches[2]
     $number = $Matches[3]
     $path = $null
-    foreach ($root in @("$HOME\projects", "$HOME\projects-personal"))
+    foreach ($root in @("$HOME\projects")) # Comma-separated list of folders to check
     {
         if (Test-Path -Path "$root\$repository")
         {
@@ -631,5 +638,78 @@ function pr
     & git fetch --quiet origin
     & claude "/$Mode-pr $number"
 }
+```
 
+## update-repos.sh
+
+```shell
+#!/bin/sh
+# Checks out the default branch and pulls, for every git repo in $REPOSITORY_BASE_FOLDER,
+# or in ~/projects when that variable is unset or empty.
+# Repo names given as arguments are skipped, e.g. ./update-repos.sh some-repo other-repo
+set -u
+
+base_folder="${REPOSITORY_BASE_FOLDER:-$HOME/projects}"
+
+# Never updated, whatever the arguments say.
+always_excluded="agent-storage"
+
+failures=""
+excluded=" $always_excluded $* "
+
+for directory in "$base_folder"/*/
+do
+  [ -e "$directory/.git" ] || continue
+  name=$(basename "$directory")
+
+  case "$excluded" in
+    *" $name "*)
+      printf '%s: skipped\n' "$name"
+      continue
+      ;;
+  esac
+
+  branch=$(git -C "$directory" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|^origin/||')
+  if [ -z "$branch" ]
+  then
+    for candidate in main master
+    do
+      git -C "$directory" show-ref --verify --quiet "refs/heads/$candidate" 2>/dev/null && branch=$candidate && break
+    done
+  fi
+  if [ -z "$branch" ]
+  then
+    failures="$failures$name: no default branch (main/master) found
+"
+    continue
+  fi
+
+  printf '%s (%s): ' "$name" "$branch"
+
+  if ! error=$(git -C "$directory" checkout "$branch" 2>&1)
+  then
+    printf 'checkout failed\n'
+    failures="$failures$name: checkout $branch failed - $(printf '%s' "$error" | head -n 1)
+"
+    continue
+  fi
+
+  if ! error=$(git -C "$directory" pull --ff-only 2>&1)
+  then
+    printf 'pull failed\n'
+    failures="$failures$name: pull failed - $(printf '%s' "$error" | head -n 1)
+"
+    continue
+  fi
+
+  printf 'ok\n'
+done
+
+if [ -n "$failures" ]
+then
+  printf '\nNot updated:\n'
+  printf '%s' "$failures" | sed 's/^/  /'
+else
+  printf '\nAll repositories updated.\n'
+fi
 ```
