@@ -12,10 +12,8 @@ toc: true
 ```powershell
 #! /usr/bin/pwsh
 
-# TODO: Consider using named parameters which require '-':
-# param ($f1, $f2)
 $f=$args[0]
-$arg=$args[1]
+$remainingArgs=@($args | Select-Object -Skip 1)
 
 function RemoveUnusedDockerContainersAndVolumes {
     Write-Host "Action: $function - removes all unused Docker containers & volumes."
@@ -33,7 +31,7 @@ function StopAndRemoveAllDockerContainers {
 }
 
 function StopAndRemoveUnusedDockerContainersAndVolumes {
-    Write-Host "Action: $function - stops and removes all Docker containers and removes all unused Docker volumes."
+    Write-Host "Action: $function - stops and removes all Docker containers, and removes all unused Docker volumes."
     docker stop $(docker ps -a -q) && docker container prune -f && docker volume prune -f
 }
 
@@ -76,35 +74,44 @@ function GetMysqlDockerContainerId {
     $sql_container_name=$(docker ps | Select-String -Pattern "mysql:")
     if ($null -eq $sql_container_name) {
         Write-Host "Container not found. Check if MySQL container is running."
+        Set-Variable -Name cn -Value $null -Scope Global
     } else {
         $containerId = $sql_container_name.Line.Split(" ")[0]
         Set-Clipboard -Value $containerId
-        Set-Variable -Name cn -Value $containerId
+        Set-Variable -Name cn -Value $containerId -Scope Global
         Write-Host "MySQL container id ($containerId) copied to clipboard and set as `$cn."
     }
 }
 
 function ExecuteCommandInMySqlContainer {
-    Write-Host "Action: $function - executes a MySQL command in a Docker container e.g. container_name::SHOW DATABASES."
-    $parts = $arg -split "::"
-    if ($parts.Count -gt 2) {
-        Write-Host "Warning: More than two parts (separated by '::') detected. Only part 1 (as container name) and 2 (as command) will be used."
-    }
-    if ($parts.Count -lt 2) {
-        Write-Host "Warning: You've not provided enough query parts (separated by '::'). Trying to fetch container name for you..."
-        GetMysqlDockerContainerId
-        Write-Host "Looking for container with name '$containerName' to execute command: '$arg;'."
-        docker exec -it $(docker ps -f "name=$containerName" --format "{{.ID}}") bash -c "mysql -u test -ptest -e `"$arg;`""
+    Write-Host "Action: $function - executes a MySQL command in a Docker container e.g. local_mysql SHOW DATABASES (or just SHOW DATABASES)."
+    if ($args.Count -eq 0) {
+        Write-Host "Error: Provide a command, optionally preceded by a container name e.g. 'mc local_mysql SHOW DATABASES'."
         return
     }
-    $containerName = $parts[0]
-    $command = $parts[1]
-    Write-Host "Looking for container with name $containerName to execute command: $command."
-    docker exec -it $(docker ps -f "name=$containerName" --format "{{.ID}}") bash -c "mysql -u test -ptest -e `"$command;`""
+    $containerId = docker ps -q -f "name=$($args[0])"
+    if ($containerId) {
+        Write-Host "Found container with name $($args[0])."
+        $command = ($args | Select-Object -Skip 1) -join ' '
+    } else {
+        Write-Host "No container with name '$($args[0])' found. Treating all arguments as the command and fetching MySQL container id for you..."
+        GetMysqlDockerContainerId
+        if ($null -eq $cn) {
+            return
+        }
+        $containerId = $cn
+        $command = $args -join ' '
+    }
+    if ($command -eq [string]::empty) {
+        Write-Host "Error: No command provided."
+        return
+    }
+    Write-Host "Executing command: $command."
+    docker exec -it $containerId bash -c "mysql -u test -ptest -e `"$command;`"" # Change accordingly
 }
 
 function CopyInfraVariablesToClipboard {
-    Write-Host "Action: $function - copies variables for running local infra with localstack and MySQL to clipboard."
+    Write-Host "Action: $function - copies variables of running local infra with localstack and MySQL to clipboard."
     $mysqlPortOutput = docker port local_mysql
     $mysqlPort = 'ERROR'
     if ($null -eq $mysqlPortOutput) {
@@ -118,36 +125,12 @@ function CopyInfraVariablesToClipboard {
     if ($null -eq $localstackPortOutput) {
         Write-Host "Error: Localstack container not found. Check if Localstack container is running."
     } else {
-        $localstackPort = $localstackPortOutput.Split(":")[-1] 
+        $localstackPort = $localstackPortOutput.Split(":")[-1]
         Write-Host "Localstack is accessible on port: "$localstackPort
     }
     $testEnvVars = "LOCALSTACK=http://127.0.0.1:$($localstackPort);MYSQL_URL=jdbc:mysql://localhost:$($mysqlPort)/test;MYSQL_USERNAME=root;MYSQL_PASSWORD=test" # Change accordingly
     Set-Clipboard -Value $testEnvVars
     Write-Host "Copied to clipboard: $($testEnvVars)"
-}
-
-function WhereIs {
-    Write-Host "Action: $function - finds path of an executable."
-    if ($arg -eq [string]::empty -or $arg -eq $null) {
-        Write-Host "No executable name provided."
-        $executableName = Read-Host -Prompt "Enter name of executable (excluding .exe)"
-        $ErrorActionPreference = 'SilentlyContinue'
-        $executablePath = (Get-Command "$executableName.exe").Path
-        if ($null -eq $executablePath) {
-            Write-Host "Error: Executable $executableName.exe cannot be found."
-        } else {
-            Write-Host $executablePath
-        }
-        return
-    }
-    Write-Host "Attempting to find location of $arg.exe..."
-    $ErrorActionPreference = 'SilentlyContinue'
-    $executablePath = (Get-Command "$arg.exe").Path
-    if ($null -eq $executablePath) {
-        Write-Host "Error: Executable $executableName.exe cannot be found."
-    } else {
-        Write-Host $executablePath
-    }
 }
 
 function GetPortInfo {
@@ -189,43 +172,50 @@ function GetProcessInfo {
     }
 }
 
-function GenerateUlidSilently {
-    $ulid_encoding = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
-    $ulid_encoding_length = $ulid_encoding.Length
-    $time_now = [UInt64]((([datetime]::UtcNow).Ticks - 621355968000000000) / 10000)
-    $created_string = ''
-    for ($i = 10; $i -gt 0; $i--) {
-        $Mod = [int]($time_now % $ulid_encoding_length)
-        $created_string = $ulid_encoding[$Mod] + $created_string
-        $time_now = ($time_now - $Mod) / $ulid_encoding_length
+function WhereIs {
+    Write-Host "Action: $function - finds path of an executable."
+    $executableName = $args[0]
+    if ($executableName -eq [string]::empty -or $executableName -eq $null) {
+        Write-Host "No executable name provided."
+        $executableName = Read-Host -Prompt "Enter name of executable (excluding .exe)"
+        $ErrorActionPreference = 'SilentlyContinue'
+        $executablePath = (Get-Command "$executableName.exe").Path
+        if ($null -eq $executablePath) {
+            Write-Host "Error: Executable $executableName.exe cannot be found."
+        } else {
+            Write-Host $executablePath
+        }
+        return
     }
-    $timestamp_component = $created_string
-    $created_string = ''
-    $random = [random]::new()
-    for ($i = 16; $i -gt 0; $i--) {
-        $random_index = [int]([math]::Floor($ulid_encoding_length * $random.NextDouble()))
-        $created_string = $ulid_encoding[$random_index] + $created_string
-        Start-Sleep -Milliseconds 1
+    Write-Host "Attempting to find location of $executableName.exe..."
+    $ErrorActionPreference = 'SilentlyContinue'
+    $executablePath = (Get-Command "$executableName.exe").Path
+    if ($null -eq $executablePath) {
+        Write-Host "Error: Executable $executableName.exe cannot be found."
+    } else {
+        Write-Host $executablePath
     }
-    $random_component = $created_string
-    $ulid = $timestamp_component + $random_component
-    Set-Clipboard -Value $ulid
 }
 
-# TODO: Change path/version accordingly and keep up-to-date
-function SwitchTo-Java17 {
+function SwitchToJava17 {
     Write-Host "Action: $function - switches to specified Java version."
-    $Env:JAVA_HOME="C:\Program Files (x86)\Eclipse Adoptium\jdk-17.0.17.10-hotspot"
+    $Env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot\"
     $Env:Path="$Env:JAVA_HOME\bin;$Env:Path"
     Write-Host "Java Adoptium Temurin 17 activated."
 }
 
-# TODO: Change path/version accordingly and keep up-to-date
-function SwitchTo-Java21 {
-    Write-Host "Action: "$function" - switches to specified Java version."
+function SwitchToJava21 {
+    Write-Host "Action: $function - switches to specified Java version."
     $Env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-21.0.8.9-hotspot\"
-    $Env:Path="$Env:JAVA_HOME\bin;$Env:Path" 
+    $Env:Path="$Env:JAVA_HOME\bin;$Env:Path"
     Write-Host "Java Adoptium Temurin 21 activated."
+}
+
+function SwitchToJava25 {
+    Write-Host "Action: $function - switches to specified Java version."
+    $Env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-25.0.4.101-hotspot\"
+    $Env:Path="$Env:JAVA_HOME\bin;$Env:Path"
+    Write-Host "Java Adoptium Temurin 25 activated."
 }
 
 function ToggleGradleInitFile {
@@ -245,6 +235,81 @@ function ToggleGradleInitFile {
     }
     else {
         Write-Host "Error: No init.gradle or INACTIVE_init.gradle_INACTIVE file found."
+    }
+}
+
+function DecodeBase64EncodedString {
+    Write-Host "Action: $function - decodes, prints, and copies a base64 encoded string to your clipboard."
+    $base64String = $args -join ' '
+    if ($base64String -eq [string]::empty) {
+        Write-Host "No string provided."
+    } else {
+        $decodedBytes = [System.Convert]::FromBase64String($base64String)
+        $decodedString = [System.Text.Encoding]::UTF8.GetString($decodedBytes)
+        Set-Clipboard -Value $decodedString
+        Write-Host "The result, shown below, has been copied to your clipboard:"
+        Write-Host ""
+        Write-Host $decodedString
+    }
+}
+
+function EncodeStringAsBase64 {
+    Write-Host "Action: $function - encodes, prints, and copies a string as base64 to your clipboard."
+    $string = $args -join ' '
+    if ($string -eq [string]::empty) {
+        Write-Host "No string provided."
+    } else {
+        $bytes = [System.Text.Encoding]::UTF8.GetBytes($string)
+        $base64String = [System.Convert]::ToBase64String($bytes)
+        Set-Clipboard -Value $base64String
+        Write-Host "The result, shown below, has been copied to your clipboard:"
+        Write-Host ""
+        Write-Host $base64String
+    }
+}
+
+function DecodeCertificateString {
+    $certString = $args -join ' '
+    if ($certString -eq [string]::empty) {
+        Write-Host "No string provided."
+    } else {
+        $base64Cert = $certString -replace '-----BEGIN CERTIFICATE-----', '' -replace '-----END CERTIFICATE-----', '' -replace '\s+', ''
+        $decodedBytes = [System.Convert]::FromBase64String($base64Cert)
+        $certificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 -ArgumentList @(,$decodedBytes)
+        Write-Host "Content of decoded certificate:"
+        Write-Host $certificate
+        $certString = ""
+    }
+}
+
+function DecodeCertificatePemFile {
+    Write-Host "Action: $function - decodes and prints the content of a certificate PEM file."
+    $pemFile = $args -join ' '
+    if ($pemFile -eq [string]::empty) {
+        Write-Host "No file provided."
+    } else {
+        $pemContent = Get-Content -Path $pemFile -Raw
+        DecodeCertificateString $pemContent
+        # $base64Cert = $pemContent -replace '-----BEGIN CERTIFICATE-----', '' -replace '-----END CERTIFICATE-----', '' -replace '\s+', ''
+        # $decodedBytes = [System.Convert]::FromBase64String($base64Cert)
+        # $certificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 -ArgumentList @(,$decodedBytes)
+        # Write-Host "Content of decoded PEM certificate:"
+        # Write-Host $certificate
+    }
+}
+
+function DecodePrivateKeyPemFile {
+    Write-Host "Action: $function - decodes and prints the content of a PEM private key file."
+    $pemFile = $args -join ' '
+    if ($pemFile -eq [string]::empty) {
+        Write-Host "No file provided."
+    } else {
+        $privKeyContent = Get-Content -Path $pemFile -Raw
+        $base64PrivKey = $privKeyContent -replace '-----BEGIN PRIVATE KEY-----', '' -replace '-----END PRIVATE KEY-----', '' -replace '\s+', ''
+        $decodedBytes = [System.Convert]::FromBase64String($base64PrivKey)
+        $stringPrivKey = [System.Text.Encoding]::UTF8.GetString($decodedBytes)
+        Write-Output "Content of the private key:"
+        Write-Output $stringPrivKey
     }
 }
 
@@ -280,11 +345,33 @@ function GenerateUlid {
     Write-Host "ULID ($ulid) copied to clipboard."
 }
 
-# TODO: Change path accordingly
+function GenerateUlidSilently {
+    $ulid_encoding = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+    $ulid_encoding_length = $ulid_encoding.Length
+    $time_now = [UInt64]((([datetime]::UtcNow).Ticks - 621355968000000000) / 10000)
+    $created_string = ''
+    for ($i = 10; $i -gt 0; $i--) {
+        $Mod = [int]($time_now % $ulid_encoding_length)
+        $created_string = $ulid_encoding[$Mod] + $created_string
+        $time_now = ($time_now - $Mod) / $ulid_encoding_length
+    }
+    $timestamp_component = $created_string
+    $created_string = ''
+    $random = [random]::new()
+    for ($i = 16; $i -gt 0; $i--) {
+        $random_index = [int]([math]::Floor($ulid_encoding_length * $random.NextDouble()))
+        $created_string = $ulid_encoding[$random_index] + $created_string
+        Start-Sleep -Milliseconds 1
+    }
+    $random_component = $created_string
+    $ulid = $timestamp_component + $random_component
+    Set-Clipboard -Value $ulid
+}
+
 function FixPackageJsonPortsNames {
     Write-Host "Action: $function - recursively searches through a repo for package.json files and replaces all occurrences of '-p `${PORT:=3000}' with '-p 3000'."
     Write-Host "Fetching files..."
-    $files = Get-ChildItem -Path "C:\path\to\repo" -Filter 'package.json' -Recurse -File
+    $files = Get-ChildItem -Path "$HOME\projects\some-repository" -Filter 'package.json' -Recurse -File
     foreach ($file in $files) {
         if ($file.DirectoryName -notmatch '\\node_modules\\' -and $file.DirectoryName -notmatch '\\prisma\\' -and $file.DirectoryName -notmatch '\\db\\' -and $file.DirectoryName -notmatch '\\jest\\' -and $file.DirectoryName -notmatch '\\.next\\') {
             Write-Host "Processing file: $file..."
@@ -299,81 +386,9 @@ function FixPackageJsonPortsNames {
     Write-Host "Done!"
 }
 
-function DecodeBase64EncodedString {
-    Write-Host "Action: $function - decodes, prints, and copies a base64 encoded string to your clipboard."
-    $base64String = $arg
-    if ($base64String -eq [string]::empty) {
-        Write-Host "No string provided."
-    } else {
-        $decodedBytes = [System.Convert]::FromBase64String($base64String)
-        $decodedString = [System.Text.Encoding]::UTF8.GetString($decodedBytes)
-        Set-Clipboard -Value $decodedString
-        Write-Host "The result, shown below, has been copied to your clipboard:"
-        Write-Host ""
-        Write-Host $decodedString
-    }
-}
-
-function EncodeStringAsBase64 {
-    Write-Host "Action: $function - encodes, prints, and copies a string as base64 to your clipboard."
-    $string = $arg
-    if ($string -eq [string]::empty -or $string -eq $null) {
-        Write-Host "No string provided."
-    } else {
-        $bytes = [System.Text.Encoding]::UTF8.GetBytes($string)
-        $base64String = [System.Convert]::ToBase64String($bytes)
-        Set-Clipboard -Value $base64String
-        Write-Host "The result, shown below, has been copied to your clipboard:"
-        Write-Host ""
-        Write-Host $base64String
-    }
-}
-
-function DecodeCertificatePemFile {
-    Write-Host "Action: $function - decodes and prints the content of a certificate PEM file."
-    $pemFile = $arg
-    if ($pemFile -eq [string]::empty -or $pemFile -eq $null) {
-        Write-Host "No file provided."
-    } else {
-        $pemContent = Get-Content -Path $pemFile
-        DecodeCertificateString($pemContent)
-    }
-}
-
-function DecodeCertificateString($certString) {
-    if ($certString -eq [string]::empty -or $certString -eq $null) {
-        $certString = $arg
-    }
-    if ($certString -eq [string]::empty -or $certString -eq $null) {
-        Write-Host "No string provided."
-    } else {
-        $base64Cert = $certString -replace '-----BEGIN CERTIFICATE-----', '' -replace '-----END CERTIFICATE-----', '' -replace '\s+', ''
-        $decodedBytes = [System.Convert]::FromBase64String($base64Cert)
-        $certificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 -ArgumentList @(,$decodedBytes)
-        Write-Host "Content of decoded certificate:"
-        Write-Host $certificate
-        $certString = ""
-    }
-}
-
-function DecodePrivateKeyPemFile {
-    Write-Host "Action: $function - decodes and prints the content of a PEM private key file."
-    $pemFile = $arg
-    if ($pemFile -eq [string]::empty) {
-        Write-Host "No file provided."
-    } else {
-        $base64PrivKey = $privKeyContent -replace '-----BEGIN PRIVATE KEY-----', '' -replace '-----END PRIVATE KEY-----', '' -replace '\s+', ''
-        $decodedBytes = [System.Convert]::FromBase64String($base64PrivKey)
-        $stringPrivKey = [System.Text.Encoding]::UTF8.GetString($decodedBytes)
-        Write-Output "Content of the private key:"
-        Write-Output $stringPrivKey
-    }
-}
-
-function UpdateAllRepositories($excludedRepositories) {
-    Write-Host "Action: "$function" - checks out the default branch and pulls, for every repository."
-    # Full path, because a bare 'bash' can resolve to the WSL shim instead of Git Bash
-    & "$env:ProgramFiles\Git\bin\bash.exe" "$HOME\Documents\PowerShell\Scripts\update-repos.sh" @excludedRepositories
+function UpdateAllRepositories {
+    Write-Host "Action: $function - checks out the default branch and pulls, for every repository."
+    & "$env:ProgramFiles\Git\bin\bash.exe" "$HOME\Documents\PowerShell\Scripts\update-repos.sh" @args
 }
 
 function Help {
@@ -383,64 +398,65 @@ function Help {
     Write-Host "drv        : Remove unused volumes"
     Write-Host "dsrc       : Stop and remove all containers"
     Write-Host "dsrcv      : Stop and remove all containers and volumes"
-    Write-Host "nmc        : Spin up new MySQL container and copies environment variables to clipboard"
+    Write-Host "nmc        : Spin up new MySQL container and copy environment variables to clipboard"
     Write-Host "mp         : Copy MySQL container port number to clipboard"
     Write-Host "mid        : Set MySQL container id as variable"
-    Write-Host "mc         : Execute a MySQL command in a container (use with argument 'container_name::command' or just 'command')"
-    Write-Host "infv       : Copies variables of running local infra with localstack and MySQL to clipboard"
+    Write-Host "mc         : Execute a MySQL command in a container (use with container name and command as arguments e.g. 'local_mysql SHOW DATABASES', or just the command to use the running MySQL container)"
+    Write-Host "infv       : Copy variables of running local infra with localstack and MySQL to clipboard"
     Write-Host "[ System ]"
-    Write-Host "where      : Find path of an executable"
     Write-Host "gp         : Get TCP connections (for port specified)"
     Write-Host "pr         : Get process information for a given PID"
+    Write-Host "where      : Find path of an executable"
     Write-Host "[ Java ]"
     Write-Host "j17        : Switch to Java Temurin 17"
     Write-Host "j21        : Switch to Java Temurin 21"
+    Write-Host "j25        : Switch to Java Temurin 25"
     Write-Host "ginit      : Set Gradle init file to active or inactive"
     Write-Host "[ Security ]"
-    Write-Host "decb64     : Decodes and prints a base64 encoded string (use with base64 string as argument)"
-    Write-Host "encb64     : Encodes and prints a string as base64 (use with string as argument)"
-    Write-Host "deccertstr : Decodes and prints the content certificate (use with certificate string as argument)"
-    Write-Host "deccertpem : Decodes and prints the content of a PEM certificate file (use with absolute file path as argument)"
-    Write-Host "deckeypem  : Decodes and prints the content of a PEM private key file (use with absolute file path as argument)"
+    Write-Host "decb64     : Decode and prints a base64 encoded string (use with base64 string as argument)"
+    Write-Host "encb64     : Encode and prints a string as base64 (use with string as argument)"
+    Write-Host "deccertstr : Decode and prints the content certificate (use with certificate string as argument)"
+    Write-Host "deccertpem : Decode and prints the content of a PEM certificate file (use with absolute file path as argument)"
+    Write-Host "deckeypem  : Decode and prints the content of a PEM private key file (use with absolute file path as argument)"
     Write-Host "[ Utility ]"
     Write-Host "uuid       : Generate a random UUID"
     Write-Host "ulid       : Generate a random ULID"
     Write-Host "ulids      : Generate a random ULID silently i.e only copy to clipboard"
-    Write-Host "fixports   : Recursively searches for package.json files in a repo and makes ports Powershell syntax compatible"
-    Write-Host "ur         : Update all repositories i.e. check out the default branch and pull (arguments are repository names to skip)"
+    Write-Host "fixfe      : Search for package.json files recursively in a repo and make ports Powershell syntax compatible"
+    Write-Host "ur         : Update all repositories i.e. check out the default branch and pull (use with repository names as arguments to skip them)"
     Write-Host "?          : Show this list of parameters"
 }
 
-function ExecuteParameter($function, $arg) {
-    if ($null -ne $arg) {
-        Write-Host "Argument: '$arg' - will be ignored if function does not require it."
+function ExecuteParameter($function, $remainingArgs) {
+    if ($remainingArgs) {
+        Write-Host "Arguments: '$remainingArgs' - will be ignored if function does not require them."
     }
     switch ($function) {
-        {$_ -eq "nmc"} { SpinUpNewMysqlDockerContainer }
-        {$_ -eq "mp"} { GetMysqlDockerContainerPortNumber }
-        {$_ -eq "mid"} { GetMysqlDockerContainerId }
-        {$_ -eq "mc"} { ExecuteCommandInMySqlContainer($arg) }
-        {$_ -eq "j17"} { SwitchTo-Java17 }
-        {$_ -eq "j21"} { SwitchTo-Java21 }
-        {$_ -eq "gp"} { GetPortInfo }
-        {$_ -eq "pr"} { GetProcessInfo }
-        {$_ -eq "where"} { WhereIs($arg) }
         {$_ -eq "drcv" -or $_ -eq "drmcv"} { RemoveUnusedDockerContainersAndVolumes }
         {$_ -eq "drv" -or $_ -eq "drmv"} { RemoveUnusedDockerVolumes }
         {$_ -eq "dsrc"} { StopAndRemoveAllDockerContainers }
         {$_ -eq "dsrcv"} { StopAndRemoveUnusedDockerContainersAndVolumes }
+        {$_ -eq "nmc"} { SpinUpNewMysqlDockerContainer }
+        {$_ -eq "mp"} { GetMysqlDockerContainerPortNumber }
+        {$_ -eq "mid"} { GetMysqlDockerContainerId }
+        {$_ -eq "mc"} { ExecuteCommandInMySqlContainer @remainingArgs }
+        {$_ -eq "infv"} { CopyInfraVariablesToClipboard }
+        {$_ -eq "gp"} { GetPortInfo }
+        {$_ -eq "pr"} { GetProcessInfo }
+        {$_ -eq "where"} { WhereIs @remainingArgs }
+        {$_ -eq "j21"} { SwitchToJava21 }
+        {$_ -eq "j25"} { SwitchToJava25 }
+        {$_ -eq "ginit"} { ToggleGradleInitFile }
+        {$_ -eq "decb64"} { DecodeBase64EncodedString @remainingArgs }
+        {$_ -eq "encb64"} { EncodeStringAsBase64 @remainingArgs }
+        {$_ -eq "deccertstr"} { DecodeCertificateString @remainingArgs }
+        {$_ -eq "deccertpem"} { DecodeCertificatePemFile @remainingArgs }
+        {$_ -eq "deckeypem"} { DecodePrivateKeyPemFile @remainingArgs }
         {$_ -eq "uuid"} { GenerateUuid }
         {$_ -eq "ulid"} { GenerateUlid }
         {$_ -eq "ulids"} { GenerateUlidSilently }
-        {$_ -eq "ginit"} { ToggleGradleInitFile }
-        {$_ -eq "fixports"} { FixPackageJsonPortsNames }
-        {$_ -eq "encb64"} { EncodeStringAsBase64($arg) }
-        {$_ -eq "decb64"} { DecodeBase64EncodedString($arg) }
-        {$_ -eq "deccertpem"} { DecodeCertificatePemFile($arg) }
-        {$_ -eq "deccertstr"} { DecodeCertificateString($arg) }
-        {$_ -eq "deckeypem"} { DecodePrivateKeyPemFile($arg) }
-        {$_ -eq "infv"} { CopyInfraVariablesToClipboard }
-        {$_ -eq "ur"} { UpdateAllRepositories($remainingArgs) }
+        {$_ -eq "fixfe"} { FixPackageJsonPortsNames }
+        {$_ -eq "ur"} { UpdateAllRepositories @remainingArgs }
         {$_ -eq "?" -or $_ -eq "help"} { Help }
         default { Write-Host "Error: Invalid parameter. No action taken."; break }
     }
@@ -449,11 +465,7 @@ function ExecuteParameter($function, $arg) {
 if ($null -eq $f) {
     Write-Host "Need to provide one parameter (and optionally arguments). No action taken."
 } else {
-    if ($null -ne $arg) {
-        ExecuteParameter $f $arg
-    } else {
-        ExecuteParameter $f
-    }
+    ExecuteParameter $f $remainingArgs
 }
 
 Write-Host ""
@@ -465,7 +477,7 @@ environment variables. Remember to update any locations used in the script (e.g.
 the script with e.g. `kim ?` to display the available commands.
 {{< /hint >}}
 
-## Profile
+## Microsoft.PowerShell_profile.ps1
 
 ```powershell
 # Initiate OMP styling
