@@ -649,7 +649,13 @@ function pr
     }
     Set-Location -Path $path
     & git fetch --quiet origin
-    & $PREFERRED_AGENT "/$Mode-pr $number $args"
+    $skill = switch ($PREFERRED_AGENT)
+    {
+        'claude' { "/$Mode-pr" }
+        'codex' { "`$$Mode-pr" }
+        default { "/skill:$Mode-pr" } # Pi
+    }
+    & $PREFERRED_AGENT "$skill $number $args"
 }
 ```
 
