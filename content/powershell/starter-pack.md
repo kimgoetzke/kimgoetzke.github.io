@@ -498,6 +498,8 @@ $env:POWERSHELL_UPDATECHECK = 'Off'
 
 # Set preferred editor for file-opening shortcuts (used by function fi below)
 $PREFERRED_EDITOR = 'zed'
+
+# Set preferred agent harness (used by function pr below)
 $PREFERRED_AGENT = 'claude'
 
 # Some IDEs set the working directory via -WorkingDirectory but PowerShell sometimes ignores it.
