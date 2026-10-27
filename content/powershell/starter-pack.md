@@ -498,6 +498,7 @@ $env:POWERSHELL_UPDATECHECK = 'Off'
 
 # Set preferred editor for file-opening shortcuts (used by function fi below)
 $PREFERRED_EDITOR = 'zed'
+$PREFERRED_AGENT = 'claude'
 
 # Some IDEs set the working directory via -WorkingDirectory but PowerShell sometimes ignores it.
 # This ensures we stay where the IDE puts us, assuming that you start the terminal in the IDE with:
@@ -610,7 +611,7 @@ function pr
     param([string]$Url, [string]$Mode)
     if (-not $Url -or -not $Mode)
     {
-        Write-Host "Error: Usage is pr {pull request URL} {review|explain}."
+        Write-Host "Error: Usage is pr {pull request URL} {review|explain} [instructions]."
         return
     }
     if ($Mode -ne "review" -and $Mode -ne "explain")
@@ -648,7 +649,7 @@ function pr
     }
     Set-Location -Path $path
     & git fetch --quiet origin
-    & claude "/$Mode-pr $number"
+    & $PREFERRED_AGENT "/$Mode-pr $number $args"
 }
 ```
 
